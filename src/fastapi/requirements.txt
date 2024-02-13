@@ -1,0 +1,5 @@
+pydantic
+fastapi[all]
+sqlalchemy
+psycopg2
+strawberry-graphql[fastapi]

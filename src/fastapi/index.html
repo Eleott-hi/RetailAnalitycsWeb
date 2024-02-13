@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strawberry GraphQL Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .user-info {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        p {
+            margin: 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>User Information</h2>
+        <div id="users-list">
+            <!-- User data will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query {
+                            users {
+                                id
+                                name
+                                age
+                            }
+                        }
+                    `
+                })
+            });
+            const data = await response.json();
+            const users = data.data.users;
+            const usersListElement = document.getElementById('users-list');
+            users.forEach(user => {
+                const userInfoElement = document.createElement('div');
+                userInfoElement.classList.add('user-info');
+                userInfoElement.innerHTML = `
+                    <p>ID: ${user.id}</p>
+                    <p>Name: ${user.name}</p>
+                    <p>Age: ${user.age}</p>
+                `;
+                usersListElement.appendChild(userInfoElement);
+            });
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>

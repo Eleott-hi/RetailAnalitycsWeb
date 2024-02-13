@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strawberry GraphQL Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .user-info {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>User Information</h2>
+        <div id="users-list">
+            <!-- User data will be displayed here -->
+        </div>
+
+        <h2>Add User</h2>
+        <form id="add-user-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+
+            <input type="submit" value="Add User">
+        </form>
+    </div>
+
+    <script>
+        async function fetchData() {
+            // Fetch users data and display it
+            // This function remains the same as before
+        }
+
+        async function addUser(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const name = formData.get('name');
+            const age = parseInt(formData.get('age'));
+
+            const response = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        mutation {
+                            createUser(name: "${name}", age: ${age}) {
+                                name
+                                age
+                            }
+                        }
+                    `
+                })
+            });
+            const data = await response.json();
+            const newUser = data.data.addUser;
+
+            const usersListElement = document.getElementById('users-list');
+            const userInfoElement = document.createElement('div');
+            userInfoElement.classList.add('user-info');
+            userInfoElement.innerHTML = `
+                <p>Name: ${newUser.name}</p>
+                <p>Age: ${newUser.age}</p>
+            `;
+            usersListElement.appendChild(userInfoElement);
+
+            // Clear the form fields
+            form.reset();
+        }
+
+        document.getElementById('add-user-form').addEventListener('submit', addUser);
+
+        fetchData();
+    </script>
+</body>
+</html>

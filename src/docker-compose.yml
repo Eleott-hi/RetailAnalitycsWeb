@@ -1,0 +1,36 @@
+
+version: '3'
+
+services:
+  db:
+    image: postgres:16
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+  fastapi:
+    build: ./fastapi
+    # image: python:3.11
+    container_name: fastapi
+    working_dir: /app
+    ports:
+      - 8000:8000
+    volumes:
+      - ./fastapi:/app
+    command: bash -c "pip install -r requirements.txt; python3 main.py"
+    depends_on:
+      - db
