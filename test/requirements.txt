@@ -1,2 +1,6 @@
 sqlalchemy
 aiosqlite
+aiohttp
+requests
+fastapi[all]
+httpx
