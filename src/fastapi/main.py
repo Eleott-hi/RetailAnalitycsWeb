@@ -4,8 +4,13 @@ from strawberry.fastapi import GraphQLRouter
 from fastapi.responses import FileResponse
 from GraphQL.Mutation import Mutation
 from GraphQL.Query import Query
+from GraphQL.Subscription import Subscription
 
-schema = strawberry.Schema(Query, Mutation)
+schema = strawberry.Schema(
+    query=Query,
+    mutation=Mutation,
+    subscription=Subscription
+)
 graphql_app = GraphQLRouter(schema)
 
 app = FastAPI()
@@ -24,4 +29,3 @@ async def add_user_url() -> FileResponse:
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="fastapi", port=8000, reload=True)
-

@@ -1,15 +1,13 @@
 import strawberry
-from typing import List, Dict
-import Database.Models as DBModels
+from typing import List, Optional
 import GraphQL.Models as GQLModels
-from Database.Database import get_db
-from sqlalchemy.orm import joinedload
 
 
 @strawberry.type
 class Query:
     @strawberry.field
     def personal_datas(self) -> List[GQLModels.PersonalData]:
+        print(GQLModels.PersonalData.__name__)
         return GQLModels.PersonalData.all()
 
     @strawberry.field

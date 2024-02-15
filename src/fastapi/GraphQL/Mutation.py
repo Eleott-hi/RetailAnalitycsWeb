@@ -1,6 +1,4 @@
 import strawberry
-from Database.Database import get_db
-import Database.Models as DBModels
 import GraphQL.Models as GQLModels
 
 

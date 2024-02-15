@@ -17,17 +17,21 @@ class PersonalData:
 
     @strawberry.field
     def cards(self) -> List["Card"]:
-        def f(q): return q.filter(DBModels.Card.customer_id == self.id)
-        return CRUD.all(DBModels.Card, f)
+        operations = CRUD.Operations(
+            filters=[DBModels.Card.customer_id == self.id],
+            orders_by=[DBModels.Card.id]
+        )
+        return CRUD.all(DBModels.Card, operations)
 
     @classmethod
     def all(self) -> List['PersonalData']:
-        return CRUD.all(DBModels.PersonalData)
+        operations = CRUD.Operations(orders_by=[DBModels.PersonalData.id])
+        return CRUD.all(DBModels.PersonalData, operations)
 
     @classmethod
     def get(self, id: int) -> 'PersonalData':
-        def f(q): return q.filter(DBModels.PersonalData.id == id)
-        return CRUD.get(DBModels.PersonalData, f)
+        operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
+        return CRUD.one(DBModels.PersonalData, operations)
 
     @classmethod
     def create(self,  name: str, surname: str, email: str, phone: str) -> 'PersonalData':
@@ -35,13 +39,13 @@ class PersonalData:
 
     @classmethod
     def update(self, id: int, name: str, surname: str, email: str, phone: str) -> 'PersonalData':
-        def f(q): return q.filter(DBModels.PersonalData.id == id)
-        return CRUD.update(DBModels.PersonalData, f, name=name, surname=surname, email=email, phone=phone)
+        operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
+        return CRUD.update(DBModels.PersonalData, operations, name=name, surname=surname, email=email, phone=phone)
 
     @classmethod
     def delete(self, id: int) -> str:
-        def f(q): return q.filter(DBModels.PersonalData.id == id)
-        return CRUD.delete(DBModels.PersonalData, f)
+        operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
+        return CRUD.delete(DBModels.PersonalData, operations)
 
 
 @strawberry.type
@@ -55,17 +59,21 @@ class Card:
 
     @strawberry.field
     def transactions(self) -> List['Transaction']:
-        def f(q): return q.filter(DBModels.Transaction.card_id == self.id)
-        return CRUD.all(DBModels.Transaction, f)
+        operations = CRUD.Operations(
+            filters=[DBModels.Transaction.card_id == self.id],
+            orders_by=[DBModels.Transaction.id]
+        )
+        return CRUD.all(DBModels.Transaction, operations)
 
     @classmethod
     def all(self) -> List['Card']:
-        return CRUD.all(DBModels.Card)
+        operations = CRUD.Operations(orders_by=[DBModels.Card.id])
+        return CRUD.all(DBModels.Card, operations)
 
     @classmethod
     def get(self, id: int) -> 'Card':
-        def f(q): return q.filter(DBModels.Card.id == id)
-        return CRUD.get(DBModels.Card, f)
+        operations = CRUD.Operations(filters=[DBModels.Card.id == id])
+        return CRUD.one(DBModels.Card, operations)
 
     @classmethod
     def create(self, customer_id: int) -> 'Card':
@@ -73,13 +81,13 @@ class Card:
 
     @classmethod
     def update(self, id: int, customer_id: int) -> 'Card':
-        def f(q): return q.filter(DBModels.Card.id == id)
-        return CRUD.update(DBModels.Card, f, customer_id=customer_id)
+        operations = CRUD.Operations(filters=[DBModels.Card.id == id])
+        return CRUD.update(DBModels.Card, operations, customer_id=customer_id)
 
     @classmethod
     def delete(self, id: int) -> str:
-        def f(q): return q.filter(DBModels.Card.id == id)
-        return CRUD.delete(DBModels.Card, f)
+        operations = CRUD.Operations(filters=[DBModels.Card.id == id])
+        return CRUD.delete(DBModels.Card, operations)
 
 
 @strawberry.type
@@ -89,17 +97,21 @@ class GroupSKU:
 
     @strawberry.field
     def skus(self) -> List['SKU']:
-        def f(q): return q.filter(DBModels.SKU.group_id == self.id)
-        return CRUD.all(DBModels.SKU, f)
+        operations = CRUD.Operations(
+            filters=[DBModels.SKU.group_id == self.id],
+            orders_by=[DBModels.SKU.id]
+        )
+        return CRUD.all(DBModels.SKU, operations)
 
     @classmethod
     def all(self) -> List['GroupSKU']:
-        return CRUD.all(DBModels.GroupSKU)
+        operations = CRUD.Operations(orders_by=[DBModels.GroupSKU.id])
+        return CRUD.all(DBModels.GroupSKU, operations)
 
     @classmethod
     def get(self, id: int) -> 'GroupSKU':
         def f(q): return q.filter(DBModels.GroupSKU.id == id)
-        return CRUD.get(DBModels.GroupSKU, f)
+        return CRUD.one(DBModels.GroupSKU, f)
 
     @classmethod
     def create(self, name: str) -> 'GroupSKU':
@@ -107,13 +119,13 @@ class GroupSKU:
 
     @classmethod
     def update(self, id: int, name: str) -> 'GroupSKU':
-        def f(q): return q.filter(DBModels.GroupSKU.id == id)
-        return CRUD.update(DBModels.GroupSKU, f, name=name)
+        operations = CRUD.Operations(filters=[DBModels.GroupSKU.id == id])
+        return CRUD.update(DBModels.GroupSKU, operations, name=name)
 
     @classmethod
     def delete(self, id: int) -> str:
-        def f(q): return q.filter(DBModels.GroupSKU.id == id)
-        return CRUD.delete(DBModels.GroupSKU, f)
+        operations = CRUD.Operations(filters=[DBModels.GroupSKU.id == id])
+        return CRUD.delete(DBModels.GroupSKU, operations)
 
 
 @strawberry.type
@@ -128,22 +140,29 @@ class SKU:
 
     @strawberry.field
     def stores(self) -> List['Store']:
-        def f(q): return q.filter(DBModels.Store.sku_id == self.id)
-        return CRUD.all(DBModels.Store, f)
+        operations = CRUD.Operations(
+            DBModels.Store.sku_id == self.id,
+            orders_by=[DBModels.Store.id]
+        )
+        return CRUD.all(DBModels.Store, operations)
 
     @strawberry.field
     def checks(self) -> List['Check']:
-        def f(q): return q.filter(DBModels.Check.sku_id == self.id)
-        return CRUD.all(DBModels.Check, f)
+        operations = CRUD.Operations(
+            filters=[DBModels.Check.sku_id == self.id],
+            orders_by=[DBModels.Check.id]
+        )
+        return CRUD.all(DBModels.Check, operations)
 
     @classmethod
     def all(self) -> List['SKU']:
-        return CRUD.all(DBModels.SKU)
+        operations = CRUD.Operations(orders_by=[DBModels.SKU.id])
+        return CRUD.all(DBModels.SKU, operations)
 
     @classmethod
     def get(self, id: int) -> 'SKU':
-        def f(q): return q.filter(DBModels.SKU.id == id)
-        return CRUD.get(DBModels.SKU, f)
+        operations = CRUD.Operations(filters=[DBModels.SKU.id == id])
+        return CRUD.one(DBModels.SKU, operations)
 
     @classmethod
     def create(self, name: str, group_id: int) -> 'SKU':
@@ -151,13 +170,13 @@ class SKU:
 
     @classmethod
     def update(self, id: int, name: str, group_id: int) -> 'SKU':
-        def f(q): return q.filter(DBModels.SKU.id == id)
-        return CRUD.update(DBModels.SKU, f, name=name, group_id=group_id)
+        operations = CRUD.Operations(filters=[DBModels.SKU.id == id])
+        return CRUD.update(DBModels.SKU, operations, name=name, group_id=group_id)
 
     @classmethod
     def delete(self, id: int) -> str:
-        def f(q): return q.filter(DBModels.SKU.id == id)
-        return CRUD.delete(DBModels.SKU, f)
+        operations = CRUD.Operations(filters=[DBModels.SKU.id == id])
+        return CRUD.delete(DBModels.SKU, operations)
 
 
 @strawberry.type
@@ -173,17 +192,21 @@ class Store:
 
     @strawberry.field
     def transactions(self) -> List['Transaction']:
-        def f(q): return q.filter(DBModels.Transaction.store_id == self.id)
-        return CRUD.all(DBModels.Transaction, f)
+        operations = CRUD.Operations(
+            filters=[DBModels.Transaction.store_id == self.id],
+            orders_by=[DBModels.Transaction.id]
+        )
+        return CRUD.all(DBModels.Transaction, operations)
 
     @classmethod
     def all(self) -> List['Store']:
-        return CRUD.all(DBModels.Store)
+        operations = CRUD.Operations(orders_by=[DBModels.Store.id])
+        return CRUD.all(DBModels.Store, operations)
 
     @classmethod
     def get(self, id: int) -> 'Store':
-        def f(q): return q.filter(DBModels.Store.id == id)
-        return CRUD.get(DBModels.Store, f)
+        operations = CRUD.Operations(filters=[DBModels.Store.id == id])
+        return CRUD.one(DBModels.Store, operations)
 
     @classmethod
     def create(self, sku_id: int, purchase_price: float, retail_price: float) -> 'Store':
@@ -191,13 +214,13 @@ class Store:
 
     @classmethod
     def update(self, id: int, sku_id: int, purchase_price: float, retail_price: float) -> 'Store':
-        def f(q): return q.filter(DBModels.Store.id == id)
-        return CRUD.update(DBModels.Store, f, sku_id=sku_id, purchase_price=purchase_price, retail_price=retail_price)
+        operations = CRUD.Operations(filters=[DBModels.Store.id == id])
+        return CRUD.update(DBModels.Store, operations, sku_id=sku_id, purchase_price=purchase_price, retail_price=retail_price)
 
     @classmethod
     def delete(self, id: int) -> str:
-        def f(q): return q.filter(DBModels.Store.id == id)
-        return CRUD.delete(DBModels.Store, f)
+        operations = CRUD.Operations(filters=[DBModels.Store.id == id])
+        return CRUD.delete(DBModels.Store, operations)
 
 
 @strawberry.type
@@ -218,17 +241,20 @@ class Transaction:
 
     @strawberry.field
     def check(self) -> 'Check':
-        def f(q): return q.filter(DBModels.Check.transaction_id == self.id)
-        return CRUD.get(DBModels.Check, f)
+        operations = CRUD.Operations(
+            filters=[DBModels.Check.transaction_id == self.id]
+        )
+        return CRUD.one(DBModels.Check, operations)
 
     @classmethod
     def all(self) -> List['Transaction']:
-        return CRUD.all(DBModels.Transaction)
+        operations = CRUD.Operations(orders_by=[DBModels.Transaction.id])
+        return CRUD.all(DBModels.Transaction, operations)
 
     @classmethod
     def get(self, id: int) -> 'Transaction':
-        def f(q): return q.filter(DBModels.Transaction.id == id)
-        return CRUD.get(DBModels.Transaction, f)
+        operations = CRUD.Operations(filters=[DBModels.Transaction.id == id])
+        return CRUD.one(DBModels.Transaction, operations)
 
     @classmethod
     def create(self, card_id: int, sum: float, datetime: str, store_id: int) -> 'Transaction':
@@ -236,8 +262,8 @@ class Transaction:
 
     @classmethod
     def update(self, id: int, card_id: int, sum: float, datetime: str, store_id: int) -> 'Transaction':
-        def f(q): return q.filter(DBModels.Transaction.id == id)
-        return CRUD.update(DBModels.Transaction, f, card_id=card_id, sum=sum, datetime=datetime, store_id=store_id)
+        operations = CRUD.Operations(filters=[DBModels.Transaction.id == id])
+        return CRUD.update(DBModels.Transaction, operations, card_id=card_id, sum=sum, datetime=datetime, store_id=store_id)
 
 
 @strawberry.type
@@ -259,13 +285,14 @@ class Check:
 
     @classmethod
     def all(self) -> List['Check']:
-        return CRUD.all(DBModels.Check)
+        operations = CRUD.Operations(orders_by=[DBModels.Check.transaction_id])
+        return CRUD.all(DBModels.Check, operations)
 
     @classmethod
     def get(self, transaction_id: int) -> 'Check':
-        def f(q): return q.filter(
-            DBModels.Check.transaction_id == transaction_id)
-        return CRUD.get(DBModels.Check, f)
+        operations = CRUD.Operations(
+            filters=[DBModels.Check.transaction_id == transaction_id])
+        return CRUD.one(DBModels.Check, operations)
 
 
 @strawberry.type
@@ -274,7 +301,10 @@ class DateOfAnalysisFormation:
 
     @classmethod
     def all(self) -> List['DateOfAnalysisFormation']:
-        return CRUD.all(DBModels.DateOfAnalysisFormation)
+        operations = CRUD.Operations(
+            orders_by=[DBModels.DateOfAnalysisFormation.date]
+        )
+        return CRUD.all(DBModels.DateOfAnalysisFormation, operations)
 
 
 @strawberry.type
@@ -286,4 +316,5 @@ class Segment:
 
     @classmethod
     def all(self) -> List['Segment']:
-        return CRUD.all(DBModels.Segment)
+        operations = CRUD.Operations(orders_by=[DBModels.Segment.segment])
+        return CRUD.all(DBModels.Segment, operations)

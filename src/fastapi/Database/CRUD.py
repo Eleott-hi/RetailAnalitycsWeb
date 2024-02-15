@@ -1,18 +1,40 @@
 from Database.Database import get_db
+from dataclasses import dataclass, field
 
 
 def base_filter(q): return q
 
 
-def all(cls: type, filter: callable = base_filter) -> list[any]:
-    with get_db() as session:
-        return filter(session.query(cls)).all()
+@dataclass
+class Operations:
+    filters: list = field(default_factory=list)
+    orders_by: list = field(default_factory=list)
+    limit: int = None
+    offset: int = 0
+
+    def perform(self, q):
+        for f in self.filters:
+            q = q.filter(f)
+
+        for o in self.orders_by:
+            q = q.order_by(o)
+
+        q = q.offset(self.offset)
+
+        if self.limit:
+            q = q.limit(self.limit)
+
+        return q
 
 
-def get(cls: type, filter: callable = base_filter) -> any:
+def all(cls: type, operations: Operations = Operations()) -> list[any]:
     with get_db() as session:
-        item = filter(session.query(cls)).first()
-        return item
+        return operations.perform(session.query(cls)).all()
+
+
+def one(cls: type, operations: Operations = Operations()) -> any:
+    with get_db() as session:
+        return operations.perform(session.query(cls)).first()
 
 
 def create(cls: type, **kwargs) -> any:
@@ -24,9 +46,9 @@ def create(cls: type, **kwargs) -> any:
         return item
 
 
-def update(cls: type, filter: callable = base_filter, **kwargs) -> any:
+def update(cls: type, operations: Operations = Operations(), **kwargs) -> any:
     with get_db() as session:
-        item = filter(session.query(cls)).first()
+        item = operations.perform(session.query(cls)).first()
 
         for key, value in kwargs.items():
             setattr(item, key, value)
@@ -37,9 +59,9 @@ def update(cls: type, filter: callable = base_filter, **kwargs) -> any:
         return item
 
 
-def delete(cls: type, filter: callable = base_filter) -> str:
+def delete(cls: type, operations: Operations = Operations()) -> str:
     with get_db() as session:
-        item = filter(session.query(cls)).first()
+        item = operations.perform(session.query(cls)).first()
         item.delete()
         session.commit()
         return "Deleted !"
