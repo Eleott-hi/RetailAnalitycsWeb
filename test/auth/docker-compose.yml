@@ -1,0 +1,17 @@
+
+
+
+
+version: '3'
+
+services:
+
+  auth:
+    image: python:3.11
+    container_name: auth
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: bash -c "pip install -r requirements.txt; python3 auth.py"

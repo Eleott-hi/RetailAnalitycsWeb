@@ -1,10 +1,10 @@
 import strawberry
 from datetime import datetime
 from typing import List, Dict
-from Database.Database import get_db
-import Database.Models as DBModels
+from database.Database import get_db
+import database.Models as DBModels
 from sqlalchemy.orm import Query
-import Database.CRUD as CRUD
+import repositories.CRUD as CRUD
 
 
 @strawberry.type

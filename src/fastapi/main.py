@@ -1,30 +1,18 @@
 from fastapi import FastAPI
-import strawberry
-from strawberry.fastapi import GraphQLRouter
-from fastapi.responses import FileResponse
-from GraphQL.Mutation import Mutation
-from GraphQL.Query import Query
-from GraphQL.Subscription import Subscription
-
-schema = strawberry.Schema(
-    query=Query,
-    mutation=Mutation,
-    subscription=Subscription
-)
-graphql_app = GraphQLRouter(schema)
+from fastapi import Depends
+from services.JWT import JWTBearer
+from routers.GraphQL import router as graphql_router
+from routers.Authentication import router as auth_router
 
 app = FastAPI()
-app.include_router(graphql_app, prefix="/graphql")
+app.include_router(auth_router)
+app.include_router(
+    graphql_router,
+    prefix="/graphql",
+    tags=["GraphQL"],
+    # dependencies=[Depends(JWTBearer())]
+)
 
-
-@app.get("/")
-async def root() -> FileResponse:
-    return FileResponse("index.html")
-
-
-@app.get("/add")
-async def add_user_url() -> FileResponse:
-    return FileResponse("add-user.html")
 
 if __name__ == "__main__":
     import uvicorn

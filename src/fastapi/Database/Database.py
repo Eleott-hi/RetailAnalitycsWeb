@@ -1,18 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
-from Database.Models import Base
-from dotenv import load_dotenv
-import os
-load_dotenv()
+from database.Models import Base
 
-
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_USER = os.getenv("DB_USER")
-DB_NAME = os.getenv("DB_NAME")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+from config import DB_URL
 
 
 engine = create_engine(DB_URL)

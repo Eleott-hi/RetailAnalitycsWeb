@@ -1,5 +1,14 @@
 SET DATESTYLE TO iso, DMY;
 
+-- Insert into Roles table
+INSERT INTO Roles (name) VALUES 
+('admin'),
+('user');
+
+-- Insert into Users table
+INSERT INTO Users (username, password, Role_ID, email) VALUES
+('admin', '$2b$12$8/ut7olCV9P0ypwfNc8LpeLbPe3E9DaXayfnb4D5sXVnPhFUrLAEW', 1, 'admin@example.com'),
+('user', '$2b$12$./Kyn1h7HaFP3dlBEgQ6M.VMrkLHfZ23T4bwFzbPZ5fbVscrdQXtm', 2, 'user@example.com');
 
 CREATE OR REPLACE PROCEDURE prc_import_table(dir VARCHAR, table_name VARCHAR, del CHAR, mini BOOLEAN) AS
 $$
@@ -54,7 +63,9 @@ BEGIN
     FOR p_table IN (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = 'public')
         LOOP
             str_table := translate(p_table::varchar, '()', '');
-            IF (str_table = lower('Date_Of_Analysis_Formation') or str_table = lower('Segments')) THEN
+            IF (str_table IN (lower('Roles'), lower('Users'))) THEN
+                CONTINUE;
+            ELSEIF (str_table = lower('Date_Of_Analysis_Formation') or str_table = lower('Segments')) THEN
                 CALL prc_import_table(dir, str_table, del, false);
             ELSE
                 CALL prc_import_table(dir, str_table, del, mini);

@@ -5,6 +5,25 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
+class Role(Base):
+    __tablename__ = 'roles'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50), unique=True, nullable=False)
+
+    users = relationship("User", back_populates="role")
+
+
+class User(Base):
+    __tablename__ = 'users'
+    id = Column( Integer, primary_key=True, autoincrement=True)
+    username = Column( String(50), unique=True, nullable=False)
+    password = Column( String(256), nullable=False)
+    email = Column( String(50), unique=True)
+
+    role_id = Column(Integer, ForeignKey('roles.id'))
+    role = relationship("Role", back_populates="users")
+
+
 class PersonalData(Base):
     __tablename__ = 'personal_data'
 

@@ -1,18 +1,18 @@
-from Database.Database import get_db
+from database.Database import get_db
 from dataclasses import dataclass, field
-
-
-def base_filter(q): return q
 
 
 @dataclass
 class Operations:
+    selects: list = field(default_factory=list)
     filters: list = field(default_factory=list)
     orders_by: list = field(default_factory=list)
     limit: int = None
     offset: int = 0
 
     def perform(self, q):
+        if len(self.selects) > 0:
+            q = q.select(*self.selects)
         for f in self.filters:
             q = q.filter(f)
 

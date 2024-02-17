@@ -1,9 +1,9 @@
 import asyncio
 from typing import AsyncGenerator
- 
+
 import strawberry
 
- 
+
 @strawberry.type
 class Subscription:
     @strawberry.subscription
