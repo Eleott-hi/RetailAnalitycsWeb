@@ -1,16 +1,28 @@
-from fastapi import FastAPI
-from fastapi import Depends
+from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from services.JWT import JWTBearer
 from routers.GraphQL import router as graphql_router
 from routers.Authentication import router as auth_router
+from routers.Functions import router as function_router
 
 app = FastAPI()
 app.include_router(auth_router)
+app.include_router(function_router)
 app.include_router(
     graphql_router,
     prefix="/graphql",
     tags=["GraphQL"],
     # dependencies=[Depends(JWTBearer())]
+)
+
+origins = ["http://localhost:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

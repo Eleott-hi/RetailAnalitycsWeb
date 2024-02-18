@@ -15,6 +15,10 @@ class PersonalData:
     email: str
     phone: str
 
+    @staticmethod
+    def fields() -> List[str]:
+        return ["id", "name", "surname", "email", "phone"]
+
     @strawberry.field
     def cards(self) -> List["Card"]:
         operations = CRUD.Operations(
@@ -52,6 +56,10 @@ class PersonalData:
 class Card:
     id: int
     customer_id: int
+
+    @staticmethod
+    def fields() -> List[str]:
+        return ["id", "customer_id"]
 
     @strawberry.field
     def customer(self) -> PersonalData:
@@ -95,6 +103,10 @@ class GroupSKU:
     id: int
     name: str
 
+    @staticmethod
+    def fields() -> List[str]:
+        return ["id", "name"]
+
     @strawberry.field
     def skus(self) -> List['SKU']:
         operations = CRUD.Operations(
@@ -133,6 +145,10 @@ class SKU:
     id: int
     name: str
     group_id: int
+
+    @staticmethod
+    def fields() -> List[str]:
+        return ["id", "name", "group_id"]
 
     @strawberry.field
     def group(self) -> GroupSKU:
@@ -186,6 +202,10 @@ class Store:
     purchase_price: float
     retail_price: float
 
+    @staticmethod
+    def fields() -> List[str]:
+        return ["id", "sku_id", "purchase_price", "retail_price"]
+
     @strawberry.field
     def sku(self) -> SKU:
         return SKU.get(id=self.sku_id)
@@ -231,6 +251,10 @@ class Transaction:
     datetime: str
     store_id: int
 
+    @staticmethod
+    def fields() -> List[str]:
+        return ["id", "card_id", "sum", "datetime", "store_id"]
+
     @strawberry.field
     def card(self) -> Card:
         return Card.get(id=self.card_id)
@@ -275,6 +299,10 @@ class Check:
     sku_summ_paid: float
     sku_discount: float
 
+    @staticmethod
+    def fields() -> List[str]:
+        return ["transaction_id", "sku_id", "sku_amount", "sku_summ", "sku_summ_paid", "sku_discount"]
+
     @strawberry.field
     def transaction(self) -> Transaction:
         return Transaction.get(id=self.transaction_id)
@@ -299,6 +327,10 @@ class Check:
 class DateOfAnalysisFormation:
     date: datetime
 
+    @staticmethod
+    def fields() -> List[str]:
+        return ["date"]
+
     @classmethod
     def all(self) -> List['DateOfAnalysisFormation']:
         operations = CRUD.Operations(
@@ -313,6 +345,10 @@ class Segment:
     average_check: str
     purchase_frequency: str
     churn_probability: str
+
+    @staticmethod
+    def fields() -> List[str]:
+        return ["segment", "average_check", "purchase_frequency", "churn_probability"]
 
     @classmethod
     def all(self) -> List['Segment']:
