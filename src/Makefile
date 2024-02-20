@@ -14,3 +14,6 @@ all: clean_db
 clean_db:
 	-docker stop $(DB_CONTAINER_NAME)
 	-docker rm $(DB_CONTAINER_NAME)
+
+ui_dev:
+	cd $(UI_DIR); npm run dev

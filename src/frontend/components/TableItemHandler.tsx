@@ -57,21 +57,23 @@ export default function TableItemHandler({
                 <div className="card s21-card p-4 col-xl-3 col-md-6 col-10">
                     <h3 className="card-title text-center">{props.header}</h3>
                     <div className="card-body text-center">
-                        {Object.keys(props.content).map((column) => (
-                            <div className="col mt-3" key={column}>
-                                <div className="row">
-                                    <label htmlFor={column} className="col">
-                                        {column}
-                                    </label>
-                                    <input
-                                        id={column}
-                                        className="col"
-                                        value={columnStates[column]}
-                                        onChange={(e) => handleInputChange(e, column)}
-                                    />
+                        {
+                            Object.keys(props.content).map((column) => (
+                                <div className="col mt-3" key={column}>
+                                    <div className="row">
+                                        <label htmlFor={column} className="col">
+                                            {column}
+                                        </label>
+                                        <input
+                                            id={column}
+                                            className="col"
+                                            value={columnStates[column]}
+                                            onChange={(e) => handleInputChange(e, column)}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        }
                     </div>
                     <div className="row">
                         <div className="col text-center">

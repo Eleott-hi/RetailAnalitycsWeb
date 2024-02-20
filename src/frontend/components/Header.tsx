@@ -1,13 +1,21 @@
 "use client";
 
+
 import Script from "next/script";
 import { usePathname } from 'next/navigation';
 import Image from "next/image";
+import { isLoggedIn } from "@/components/ApiHandler";
 
-const navLinks = [
+
+const navLinksUnauthorised = [
+    { href: "/auth/login", name: "Log in" },
+    { href: "/auth/registration", name: "Sign up" },
+]
+const navLinksAuthorised = [
     { href: "/data", name: "Data" },
     { href: "/operations", name: "Operations" },
     { href: "/sql-request", name: "SQL Request" },
+    { href: "/logout", name: "Log out" },
 ];
 
 export default function Header() {
@@ -34,7 +42,7 @@ export default function Header() {
                             minWidth: "200px"
                         }}>
                         <a className="navbar-brand" href="/">
-                            Info21 v2.0 Web
+                            RetailAnalitycs v2.0 Web
                         </a>
                     </div>
 
@@ -51,7 +59,7 @@ export default function Header() {
                     <div className="collapse navbar-collapse" id="navbarCollapse">
                         <ul className="navbar-nav ms-auto mb-2 mb-md-0">
                             {
-                                navLinks.map(
+                                (isLoggedIn() ? navLinksAuthorised : navLinksUnauthorised).map(
                                     (link) => {
                                         const isActive = pathname.startsWith(link.href);
 

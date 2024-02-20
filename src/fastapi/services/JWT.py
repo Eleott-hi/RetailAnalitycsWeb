@@ -10,13 +10,13 @@ from config import JWT_SECRET_KEY, JWT_ALGORITHM, JWT_ACCESS_TOKEN_EXPIRE_MINUTE
 
 
 class JWTService:
-
-    def generate_token(self, data: dict, expires_delta: int = JWT_ACCESS_TOKEN_EXPIRE_MINUTES):
+    @staticmethod
+    def generate_token(data: dict, expires_delta: int = JWT_ACCESS_TOKEN_EXPIRE_MINUTES):
         expire = datetime.utcnow() + timedelta(minutes=expires_delta)
 
         data = {**data, 'exp': expire}
 
-        encoded = self.encode(data)
+        encoded = JWTService.encode(data)
         return encoded
 
     @staticmethod

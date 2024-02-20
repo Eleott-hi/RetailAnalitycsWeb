@@ -4,13 +4,20 @@ import schemas.Functions.schemas as schemas
 router = APIRouter(prefix="/functions", tags=['Functions'])
 
 
-@router.get("/", response_model=list[str])
+@router.get("/", response_model=dict)
 async def index():
-    return [
-        'fnc_grow_avg_check',
-        'fnc_personal_offers_aimed_at_increasing_frequency_of_visits',
-        'fnc_personal_offers_aimed_at_cross_selling'
-    ]
+    return {
+        'functions': [
+            'fnc_grow_avg_check',
+            'fnc_personal_offers_aimed_at_increasing_frequency_of_visits',
+            'fnc_personal_offers_aimed_at_cross_selling'
+        ],
+        'readable_names': [
+            'Average Check',
+            'Frequency of Visits',
+            'Cross Selling'
+        ]
+    }
 
 
 @router.get("/fnc_grow_avg_check", response_model=list[schemas.fnc_grow_avg_check_output])
