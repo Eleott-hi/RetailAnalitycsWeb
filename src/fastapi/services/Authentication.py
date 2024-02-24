@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 
 from passlib.context import CryptContext
 import repositories.CRUD as CRUD
-import database.Models as DBModels
+import Database.Models as DBModels
 from services.JWT import JWTService
 from schemas.Authentication.schema import RegisterSchema, LoginSchema, ForgotPasswordSchema
 

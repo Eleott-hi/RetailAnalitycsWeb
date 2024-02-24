@@ -17,3 +17,10 @@ clean_db:
 
 ui_dev:
 	cd $(UI_DIR); npm run dev
+
+ui_prod:
+	cd $(UI_DIR); npm run build
+	cd $(UI_DIR); npm run start
+
+install: 
+	cd $(UI_DIR); npm install

@@ -1,9 +1,7 @@
 import strawberry
 from datetime import datetime
 from typing import List, Dict
-from database.Database import get_db
-import database.Models as DBModels
-from sqlalchemy.orm import Query
+import Database.Models as DBModels
 import repositories.CRUD as CRUD
 
 

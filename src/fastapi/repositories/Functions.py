@@ -1,4 +1,4 @@
-from database.Database import get_db
+from Database.Database import get_db
 from dataclasses import dataclass, field
 from sqlalchemy import func, text
 

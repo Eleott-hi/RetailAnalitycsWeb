@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
-from database.Models import Base
+from Database.Models import Base
 
 from config import DB_URL
 

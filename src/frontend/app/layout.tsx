@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import Head from "next/head";
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
+import { AppWrapper } from '@/context';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,13 +24,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="d-flex flex-column h-100" style={{ backgroundColor: "var(--light-background-color)", }}>
 
-        <Header />
-
-        <main className="flex-shrink-0" style={{ margin: "160px 0px 0px 0px", }}>
-          {children}
-        </main>
-
-        <Footer />
+        <AppWrapper>
+          <Header />
+          <main className="flex-shrink-0" style={{ margin: "160px 0px 0px 0px", }}> {children} </main>
+          <Footer />
+        </AppWrapper>
 
       </body >
     </html >

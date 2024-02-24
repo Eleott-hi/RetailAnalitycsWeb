@@ -5,21 +5,56 @@ const csr_host = "http://localhost:8000/api/v1";
 // const AuthorizationHeader = { "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNzA4MzI0MTQ1fQ.q7NB3uOZYawFAKC7iOangu12X6v6tBlHwjpSBGpxzOM" };
 const AuthorizationHeader = { "Authorization": "" };
 
-
+const base_auth_api_url = "/auth";
 const base_table_api_url = "/tables";
 const base_sql_request_api_url = "/sql-request"
 const base_functions_api_url = "/functions";
 
-export function setAuthorizationHeader(token: string) {
-    AuthorizationHeader["Authorization"] = "Bearer " + token;
+
+export function proceedRegistration(formData: Object, on_done: (data: any) => void = () => { }, on_error: (data: any) => void = () => { }) {
+    let is_ok = true;
+    fetch(csr_host + base_auth_api_url + "/register",
+        {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+        .then(response => { console.log(response); return response })
+        .then(response => { is_ok = response.ok; return response.json(); })
+        .then(data => { if (!is_ok) throw data; return data; })
+        .then(data => { console.log(data); on_done(data); })
+        .catch(error => { console.error(error); on_error(error.detail) });
+}
+
+
+export async function proceedLogin(formData: Object) {
+    console.log(formData);
+    const response = await fetch(csr_host + base_auth_api_url + "/login",
+        {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+    const data = await response.json();
+
+    
+    if (!response.ok) throw data.detail;
+
+    return data
+}
+
+
+function setAuthorizationHeader(token_type: string, access_token: string) {
+    localStorage.setItem('token', token_type + " " + access_token);
 }
 
 export function clearAuthorizationHeader() {
-    AuthorizationHeader["Authorization"] = "";
+    localStorage.removeItem('token');
 }
 
 export function isLoggedIn() {
-    return AuthorizationHeader["Authorization"] != "";
+    return localStorage.getItem('token') != null;
 }
 
 export async function apiGetTablesAsync(on_done: (data: any) => void) {

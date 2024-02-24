@@ -5,6 +5,7 @@ import Script from "next/script";
 import { usePathname } from 'next/navigation';
 import Image from "next/image";
 import { isLoggedIn } from "@/components/ApiHandler";
+import { UseAppContext } from "@/context";
 
 
 const navLinksUnauthorised = [
@@ -20,6 +21,9 @@ const navLinksAuthorised = [
 
 export default function Header() {
     const pathname = usePathname();
+    const { actions } = UseAppContext();
+
+
     return (
         <header>
             <Script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
@@ -59,9 +63,21 @@ export default function Header() {
                     <div className="collapse navbar-collapse" id="navbarCollapse">
                         <ul className="navbar-nav ms-auto mb-2 mb-md-0">
                             {
-                                (isLoggedIn() ? navLinksAuthorised : navLinksUnauthorised).map(
+                                (actions.isLoggedIn() ? navLinksAuthorised : navLinksUnauthorised).map(
                                     (link) => {
                                         const isActive = pathname.startsWith(link.href);
+
+                                        if (link.name === "Log out")
+                                            return (
+                                                <li key={link.name} className="nav-item">
+                                                    <a href={"/auth/login"}
+                                                        onClick={() => actions.logout()}
+                                                        className={"nav-link " + (isActive ? "active s21-active-link" : "")}
+                                                        aria-current="page">
+                                                        {link.name}
+                                                    </a>
+                                                </li>
+                                            )
 
                                         return (
                                             <li key={link.name} className="nav-item">
