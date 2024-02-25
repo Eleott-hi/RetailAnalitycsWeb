@@ -10,30 +10,27 @@ export default function Registration() {
         password: '',
     });
 
-    const { hello, setHello } = UseAppContext();
-
     const [errorData, setErrorData] = useState("");
     const [successData, setSuccessData] = useState("");
+    const { actions } = UseAppContext();
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
-        console.log(name, value);
         setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        proceedRegistration(
-            formData,
-            (data) => { setSuccessData(data); setErrorData(""); },
-            (error) => { setSuccessData(""); setErrorData(error); }
-        );
+        setSuccessData("");
+        setErrorData("");
+
+        actions.register(formData).then(setSuccessData).catch(setErrorData);
     };
 
     return (
         <div className="container d-flex justify-content-center align-items-center" style={{ height: '80vh' }}>
             <div className='card s21-card p-4 col-md-8 col-lg-6 col-xl-4 col-10'>
-                <h3 className='card-title text-center'>Registration {hello}</h3>
+                <h3 className='card-title text-center'>Registration</h3>
                 <div className='card-body text-center'>
                     <form onSubmit={handleSubmit}>
                         <div className="form-floating">
@@ -127,9 +124,9 @@ export default function Registration() {
                         </div>
                     )
                 }
-                <button onClick={setHello}>here</button>
             </div>
         </div>
     );
 }
 
+// 

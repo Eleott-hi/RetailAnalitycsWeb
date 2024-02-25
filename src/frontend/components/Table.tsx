@@ -26,7 +26,7 @@ export default function Table({ data }: { data: any }) {
     return is_valid ?
         (
             <div className="">
-                <table className="table table-hover">
+                <table className="table table-hover " style={{ minHeight: "273px" }}>
                     <thead>
                         <tr>
                             {

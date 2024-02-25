@@ -20,29 +20,39 @@ class PersonalData:
     @strawberry.field
     def cards(self) -> List["Card"]:
         operations = CRUD.Operations(
-            filters=[DBModels.Card.customer_id == self.id],
-            orders_by=[DBModels.Card.id]
+            filters=[DBModels.Card.customer_id == self.id], orders_by=[DBModels.Card.id]
         )
         return CRUD.all(DBModels.Card, operations)
 
     @classmethod
-    def all(self) -> List['PersonalData']:
+    def all(self) -> List["PersonalData"]:
         operations = CRUD.Operations(orders_by=[DBModels.PersonalData.id])
         return CRUD.all(DBModels.PersonalData, operations)
 
     @classmethod
-    def get(self, id: int) -> 'PersonalData':
+    def get(self, id: int) -> "PersonalData":
         operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
         return CRUD.one(DBModels.PersonalData, operations)
 
     @classmethod
-    def create(self,  name: str, surname: str, email: str, phone: str) -> 'PersonalData':
-        return CRUD.create(DBModels.PersonalData, name=name, surname=surname, email=email, phone=phone)
+    def create(self, name: str, surname: str, email: str, phone: str) -> "PersonalData":
+        return CRUD.create(
+            DBModels.PersonalData, name=name, surname=surname, email=email, phone=phone
+        )
 
     @classmethod
-    def update(self, id: int, name: str, surname: str, email: str, phone: str) -> 'PersonalData':
+    def update(
+        self, id: int, name: str, surname: str, email: str, phone: str
+    ) -> "PersonalData":
         operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
-        return CRUD.update(DBModels.PersonalData, operations, name=name, surname=surname, email=email, phone=phone)
+        return CRUD.update(
+            DBModels.PersonalData,
+            operations,
+            name=name,
+            surname=surname,
+            email=email,
+            phone=phone,
+        )
 
     @classmethod
     def delete(self, id: int) -> str:
@@ -64,29 +74,29 @@ class Card:
         return PersonalData.get(id=self.customer_id)
 
     @strawberry.field
-    def transactions(self) -> List['Transaction']:
+    def transactions(self) -> List["Transaction"]:
         operations = CRUD.Operations(
             filters=[DBModels.Transaction.card_id == self.id],
-            orders_by=[DBModels.Transaction.id]
+            orders_by=[DBModels.Transaction.id],
         )
         return CRUD.all(DBModels.Transaction, operations)
 
     @classmethod
-    def all(self) -> List['Card']:
+    def all(self) -> List["Card"]:
         operations = CRUD.Operations(orders_by=[DBModels.Card.id])
         return CRUD.all(DBModels.Card, operations)
 
     @classmethod
-    def get(self, id: int) -> 'Card':
+    def get(self, id: int) -> "Card":
         operations = CRUD.Operations(filters=[DBModels.Card.id == id])
         return CRUD.one(DBModels.Card, operations)
 
     @classmethod
-    def create(self, customer_id: int) -> 'Card':
+    def create(self, customer_id: int) -> "Card":
         return CRUD.create(DBModels.Card, customer_id=customer_id)
 
     @classmethod
-    def update(self, id: int, customer_id: int) -> 'Card':
+    def update(self, id: int, customer_id: int) -> "Card":
         operations = CRUD.Operations(filters=[DBModels.Card.id == id])
         return CRUD.update(DBModels.Card, operations, customer_id=customer_id)
 
@@ -106,29 +116,30 @@ class GroupSKU:
         return ["id", "name"]
 
     @strawberry.field
-    def skus(self) -> List['SKU']:
+    def skus(self) -> List["SKU"]:
         operations = CRUD.Operations(
-            filters=[DBModels.SKU.group_id == self.id],
-            orders_by=[DBModels.SKU.id]
+            filters=[DBModels.SKU.group_id == self.id], orders_by=[DBModels.SKU.id]
         )
         return CRUD.all(DBModels.SKU, operations)
 
     @classmethod
-    def all(self) -> List['GroupSKU']:
+    def all(self) -> List["GroupSKU"]:
         operations = CRUD.Operations(orders_by=[DBModels.GroupSKU.id])
         return CRUD.all(DBModels.GroupSKU, operations)
 
     @classmethod
-    def get(self, id: int) -> 'GroupSKU':
-        def f(q): return q.filter(DBModels.GroupSKU.id == id)
+    def get(self, id: int) -> "GroupSKU":
+        def f(q):
+            return q.filter(DBModels.GroupSKU.id == id)
+
         return CRUD.one(DBModels.GroupSKU, f)
 
     @classmethod
-    def create(self, name: str) -> 'GroupSKU':
+    def create(self, name: str) -> "GroupSKU":
         return CRUD.create(DBModels.GroupSKU, name=name)
 
     @classmethod
-    def update(self, id: int, name: str) -> 'GroupSKU':
+    def update(self, id: int, name: str) -> "GroupSKU":
         operations = CRUD.Operations(filters=[DBModels.GroupSKU.id == id])
         return CRUD.update(DBModels.GroupSKU, operations, name=name)
 
@@ -153,37 +164,35 @@ class SKU:
         return GroupSKU.get(id=self.group_id)
 
     @strawberry.field
-    def stores(self) -> List['Store']:
+    def stores(self) -> List["Store"]:
         operations = CRUD.Operations(
-            DBModels.Store.sku_id == self.id,
-            orders_by=[DBModels.Store.id]
+            DBModels.Store.sku_id == self.id, orders_by=[DBModels.Store.id]
         )
         return CRUD.all(DBModels.Store, operations)
 
     @strawberry.field
-    def checks(self) -> List['Check']:
+    def checks(self) -> List["Check"]:
         operations = CRUD.Operations(
-            filters=[DBModels.Check.sku_id == self.id],
-            orders_by=[DBModels.Check.id]
+            filters=[DBModels.Check.sku_id == self.id], orders_by=[DBModels.Check.id]
         )
         return CRUD.all(DBModels.Check, operations)
 
     @classmethod
-    def all(self) -> List['SKU']:
+    def all(self) -> List["SKU"]:
         operations = CRUD.Operations(orders_by=[DBModels.SKU.id])
         return CRUD.all(DBModels.SKU, operations)
 
     @classmethod
-    def get(self, id: int) -> 'SKU':
+    def get(self, id: int) -> "SKU":
         operations = CRUD.Operations(filters=[DBModels.SKU.id == id])
         return CRUD.one(DBModels.SKU, operations)
 
     @classmethod
-    def create(self, name: str, group_id: int) -> 'SKU':
+    def create(self, name: str, group_id: int) -> "SKU":
         return CRUD.create(DBModels.SKU, name=name, group_id=group_id)
 
     @classmethod
-    def update(self, id: int, name: str, group_id: int) -> 'SKU':
+    def update(self, id: int, name: str, group_id: int) -> "SKU":
         operations = CRUD.Operations(filters=[DBModels.SKU.id == id])
         return CRUD.update(DBModels.SKU, operations, name=name, group_id=group_id)
 
@@ -209,31 +218,46 @@ class Store:
         return SKU.get(id=self.sku_id)
 
     @strawberry.field
-    def transactions(self) -> List['Transaction']:
+    def transactions(self) -> List["Transaction"]:
         operations = CRUD.Operations(
             filters=[DBModels.Transaction.store_id == self.id],
-            orders_by=[DBModels.Transaction.id]
+            orders_by=[DBModels.Transaction.id],
         )
         return CRUD.all(DBModels.Transaction, operations)
 
     @classmethod
-    def all(self) -> List['Store']:
+    def all(self) -> List["Store"]:
         operations = CRUD.Operations(orders_by=[DBModels.Store.id])
         return CRUD.all(DBModels.Store, operations)
 
     @classmethod
-    def get(self, id: int) -> 'Store':
+    def get(self, id: int) -> "Store":
         operations = CRUD.Operations(filters=[DBModels.Store.id == id])
         return CRUD.one(DBModels.Store, operations)
 
     @classmethod
-    def create(self, sku_id: int, purchase_price: float, retail_price: float) -> 'Store':
-        return CRUD.create(DBModels.Store, sku_id=sku_id, purchase_price=purchase_price, retail_price=retail_price)
+    def create(
+        self, sku_id: int, purchase_price: float, retail_price: float
+    ) -> "Store":
+        return CRUD.create(
+            DBModels.Store,
+            sku_id=sku_id,
+            purchase_price=purchase_price,
+            retail_price=retail_price,
+        )
 
     @classmethod
-    def update(self, id: int, sku_id: int, purchase_price: float, retail_price: float) -> 'Store':
+    def update(
+        self, id: int, sku_id: int, purchase_price: float, retail_price: float
+    ) -> "Store":
         operations = CRUD.Operations(filters=[DBModels.Store.id == id])
-        return CRUD.update(DBModels.Store, operations, sku_id=sku_id, purchase_price=purchase_price, retail_price=retail_price)
+        return CRUD.update(
+            DBModels.Store,
+            operations,
+            sku_id=sku_id,
+            purchase_price=purchase_price,
+            retail_price=retail_price,
+        )
 
     @classmethod
     def delete(self, id: int) -> str:
@@ -262,30 +286,45 @@ class Transaction:
         return Store.get(id=self.store_id)
 
     @strawberry.field
-    def check(self) -> 'Check':
-        operations = CRUD.Operations(
-            filters=[DBModels.Check.transaction_id == self.id]
-        )
+    def check(self) -> "Check":
+        operations = CRUD.Operations(filters=[DBModels.Check.transaction_id == self.id])
         return CRUD.one(DBModels.Check, operations)
 
     @classmethod
-    def all(self) -> List['Transaction']:
+    def all(self) -> List["Transaction"]:
         operations = CRUD.Operations(orders_by=[DBModels.Transaction.id])
         return CRUD.all(DBModels.Transaction, operations)
 
     @classmethod
-    def get(self, id: int) -> 'Transaction':
+    def get(self, id: int) -> "Transaction":
         operations = CRUD.Operations(filters=[DBModels.Transaction.id == id])
         return CRUD.one(DBModels.Transaction, operations)
 
     @classmethod
-    def create(self, card_id: int, sum: float, datetime: str, store_id: int) -> 'Transaction':
-        return CRUD.create(DBModels.Transaction, card_id=card_id, sum=sum, datetime=datetime, store_id=store_id)
+    def create(
+        self, card_id: int, sum: float, datetime: str, store_id: int
+    ) -> "Transaction":
+        return CRUD.create(
+            DBModels.Transaction,
+            card_id=card_id,
+            sum=sum,
+            datetime=datetime,
+            store_id=store_id,
+        )
 
     @classmethod
-    def update(self, id: int, card_id: int, sum: float, datetime: str, store_id: int) -> 'Transaction':
+    def update(
+        self, id: int, card_id: int, sum: float, datetime: str, store_id: int
+    ) -> "Transaction":
         operations = CRUD.Operations(filters=[DBModels.Transaction.id == id])
-        return CRUD.update(DBModels.Transaction, operations, card_id=card_id, sum=sum, datetime=datetime, store_id=store_id)
+        return CRUD.update(
+            DBModels.Transaction,
+            operations,
+            card_id=card_id,
+            sum=sum,
+            datetime=datetime,
+            store_id=store_id,
+        )
 
 
 @strawberry.type
@@ -299,7 +338,14 @@ class Check:
 
     @staticmethod
     def fields() -> List[str]:
-        return ["transaction_id", "sku_id", "sku_amount", "sku_summ", "sku_summ_paid", "sku_discount"]
+        return [
+            "transaction_id",
+            "sku_id",
+            "sku_amount",
+            "sku_summ",
+            "sku_summ_paid",
+            "sku_discount",
+        ]
 
     @strawberry.field
     def transaction(self) -> Transaction:
@@ -310,14 +356,15 @@ class Check:
         return SKU.get(id=self.sku_id)
 
     @classmethod
-    def all(self) -> List['Check']:
+    def all(self) -> List["Check"]:
         operations = CRUD.Operations(orders_by=[DBModels.Check.transaction_id])
         return CRUD.all(DBModels.Check, operations)
 
     @classmethod
-    def get(self, transaction_id: int) -> 'Check':
+    def get(self, transaction_id: int) -> "Check":
         operations = CRUD.Operations(
-            filters=[DBModels.Check.transaction_id == transaction_id])
+            filters=[DBModels.Check.transaction_id == transaction_id]
+        )
         return CRUD.one(DBModels.Check, operations)
 
 
@@ -330,10 +377,8 @@ class DateOfAnalysisFormation:
         return ["date"]
 
     @classmethod
-    def all(self) -> List['DateOfAnalysisFormation']:
-        operations = CRUD.Operations(
-            orders_by=[DBModels.DateOfAnalysisFormation.date]
-        )
+    def all(self) -> List["DateOfAnalysisFormation"]:
+        operations = CRUD.Operations(orders_by=[DBModels.DateOfAnalysisFormation.date])
         return CRUD.all(DBModels.DateOfAnalysisFormation, operations)
 
 
@@ -349,6 +394,19 @@ class Segment:
         return ["segment", "average_check", "purchase_frequency", "churn_probability"]
 
     @classmethod
-    def all(self) -> List['Segment']:
+    def all(self) -> List["Segment"]:
         operations = CRUD.Operations(orders_by=[DBModels.Segment.segment])
         return CRUD.all(DBModels.Segment, operations)
+
+
+tables = {
+    "PersonalData": PersonalData,
+    "Card": Card,
+    "GroupSKU": GroupSKU,
+    "SKU": SKU,
+    "Check": Check,
+    "Store": Store,
+    "Transaction": Transaction,
+    "DateOfAnalysisFormation": DateOfAnalysisFormation,
+    "Segment": Segment,
+}

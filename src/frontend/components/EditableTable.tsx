@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useState } from 'react';
 
@@ -17,7 +16,7 @@ export default function EditableTable({ data,
     return data.length > 0 ?
         (
             <div className="">
-                <table className="table table-hover">
+                <table className="table table-hover" style ={{ minHeight: "273px" }}>
                     <thead>
                         <tr>
                             {columns.map((column) => (

@@ -1,3 +1,5 @@
+import { toCamelCase } from "@/components/Utils";
+
 // const ssr_host = "http://fastapi:8000/api/v1";
 const ssr_host = "http://localhost:8000/api/v1";
 const csr_host = "http://localhost:8000/api/v1";
@@ -6,24 +8,26 @@ const csr_host = "http://localhost:8000/api/v1";
 const AuthorizationHeader = { "Authorization": "" };
 
 const base_auth_api_url = "/auth";
+const graphql_api_url = "/graphql";
 const base_table_api_url = "/tables";
 const base_sql_request_api_url = "/sql-request"
 const base_functions_api_url = "/functions";
 
 
-export function proceedRegistration(formData: Object, on_done: (data: any) => void = () => { }, on_error: (data: any) => void = () => { }) {
+export async function proceedRegistration(formData: Object, on_done: (data: any) => void = () => { }, on_error: (data: any) => void = () => { }) {
     let is_ok = true;
-    fetch(csr_host + base_auth_api_url + "/register",
+    const response = await fetch(csr_host + base_auth_api_url + "/register",
         {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
-        })
-        .then(response => { console.log(response); return response })
-        .then(response => { is_ok = response.ok; return response.json(); })
-        .then(data => { if (!is_ok) throw data; return data; })
-        .then(data => { console.log(data); on_done(data); })
-        .catch(error => { console.error(error); on_error(error.detail) });
+        });
+
+    const data = await response.json();
+
+    if (!response.ok) throw data.detail;
+
+    return data;
 }
 
 
@@ -38,57 +42,109 @@ export async function proceedLogin(formData: Object) {
 
     const data = await response.json();
 
-    
+
     if (!response.ok) throw data.detail;
 
     return data
 }
 
-
-function setAuthorizationHeader(token_type: string, access_token: string) {
-    localStorage.setItem('token', token_type + " " + access_token);
+function getBearerToken() {
+    if (typeof window === 'undefined') return "";
+    return localStorage.getItem('token') || "";
 }
 
-export function clearAuthorizationHeader() {
+function getAuthorizationHeader() {
+    return { "Authorization": "Bearer " + getBearerToken() };
+}
+
+export function setBearerToken(access_token: string) {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('token', access_token);
+}
+
+export function clearBearerToken() {
+    if (typeof window === 'undefined') return;
     localStorage.removeItem('token');
 }
 
-export function isLoggedIn() {
-    return localStorage.getItem('token') != null;
-}
-
-export async function apiGetTablesAsync(on_done: (data: any) => void) {
-    const data = await fetch(ssr_host + base_table_api_url,
+export async function apiGetTablesAsync() {
+    const response = await fetch(ssr_host + graphql_api_url,
         {
-            method: "GET",
+            method: "POST",
             cache: "no-cache",
-            headers: { ...AuthorizationHeader }
+            headers: { "Content-Type": "application/json", ...getAuthorizationHeader() },
+            body: JSON.stringify({ query: "{ tables }" })
         }
     )
-    return data.json();
+
+    if (!response.ok) {
+        throw "Tables not found";
+    }
+
+    const data = await response.json();
+
+    console.log(data);
+
+    return data.data;
 }
+
+export async function apiGetTableFieldsAsync(t_name: string) {
+    const response = await fetch(ssr_host + graphql_api_url,
+        {
+            method: "POST",
+            cache: "no-cache",
+            headers: { "Content-Type": "application/json", ...getAuthorizationHeader() },
+            body: JSON.stringify({ query: `{ table_fields(t_name: "${t_name}") }` })
+        }
+    )
+
+    if (!response.ok) {
+        throw "Error fetching table's fields";
+    }
+
+    const data = await response.json();
+
+    console.log(data);
+
+    return data.data;
+}
+
 
 export async function apiGetTableAsync(t_name: string) {
-    const response = await fetch(ssr_host + base_table_api_url + '/' + t_name,
+    const t_fields = (await apiGetTableFieldsAsync(t_name)).table_fields;
+
+    const response = await fetch(ssr_host + graphql_api_url,
         {
-            method: "GET",
+            method: "POST",
             cache: "no-cache",
-            headers: { ...AuthorizationHeader }
+            headers: { "Content-Type": "application/json", ...getAuthorizationHeader() },
+            body: JSON.stringify({
+                query: `
+            {
+                table_all(t_name: "${t_name}") {
+                  ... on ${t_name} {
+                    ${t_fields}
+                  }
+                }
+              }
+            ` })
         }
     )
-    return response.json();
+
+    console.log(response);
+
+
+    if (!response.ok) {
+        throw "Table not found";
+    }
+
+    const data = await response.json();
+
+    console.log("Data:", data.data.table_all);
+
+    return [data.data.table_all, t_fields];
 }
 
-export async function apiGetTableColumnsAsync(t_name: string) {
-    const response = await fetch(ssr_host + base_table_api_url + '/' + t_name + "/columns",
-        {
-            method: "GET",
-            cache: "no-cache",
-            headers: { ...AuthorizationHeader }
-        }
-    )
-    return response.json();
-}
 
 
 export async function apiGetFunctionsAsync() {

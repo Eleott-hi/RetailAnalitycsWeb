@@ -1,6 +1,7 @@
 "use client";
 import { UseAppContext } from '@/context';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 
 export default function Login() {
@@ -8,7 +9,7 @@ export default function Login() {
         username: "",
         password: ""
     })
-
+    const router = useRouter();
     const [errorData, setErrorData] = useState("");
     const { actions } = UseAppContext();
 
@@ -20,7 +21,9 @@ export default function Login() {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         setErrorData('');
-        actions.login(formData).catch((error: string) => setErrorData(error));
+        actions.login(formData)
+            .then(() => router.push('/'))
+            .catch((error: string) => setErrorData(error));
     };
 
     return (

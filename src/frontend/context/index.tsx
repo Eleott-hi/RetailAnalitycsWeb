@@ -1,6 +1,7 @@
 "use client";
+
 import { createContext, useState, useContext } from "react";
-import { proceedLogin } from "@/components/ApiHandler";
+import { proceedLogin, proceedRegistration } from "@/components/ApiHandler";
 
 const AppContext = createContext<any>(
     {
@@ -24,11 +25,16 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
     });
 
     const actions = {
+        register: async (formData: Object) => {
+            const data = await proceedRegistration(formData);
+            return data;
+        },
+
         login: async (formData: Object) => {
             const data = await proceedLogin(formData);
             const token = data.result.access_token;
             localStorage.setItem('token', token);
-            setStore(token);
+            setStore({ ...store, token: token });
         },
 
         isLoggedIn: () => {

@@ -4,7 +4,6 @@
 import Script from "next/script";
 import { usePathname } from 'next/navigation';
 import Image from "next/image";
-import { isLoggedIn } from "@/components/ApiHandler";
 import { UseAppContext } from "@/context";
 
 
@@ -15,7 +14,6 @@ const navLinksUnauthorised = [
 const navLinksAuthorised = [
     { href: "/data", name: "Data" },
     { href: "/operations", name: "Operations" },
-    { href: "/sql-request", name: "SQL Request" },
     { href: "/logout", name: "Log out" },
 ];
 
