@@ -1,6 +1,6 @@
 import strawberry
 from datetime import datetime
-from typing import List, Any
+from typing import List, Any, Dict
 import Database.Models as DBModels
 import repositories.CRUD as CRUD
 from pydantic import BaseModel
@@ -99,13 +99,13 @@ class Card:
         return CRUD.one(DBModels.Card, operations)
 
     @classmethod
-    def create(self, customer_id: int) -> "Card":
-        return CRUD.create(DBModels.Card, customer_id=customer_id)
+    def create(self, item: Input) -> "Card":
+        return CRUD.create(DBModels.Card, **item.dict())
 
     @classmethod
-    def update(self, id: int, customer_id: int) -> "Card":
+    def update(self, id: int, item: Input) -> "Card":
         operations = CRUD.Operations(filters=[DBModels.Card.id == id])
-        return CRUD.update(DBModels.Card, operations, customer_id=customer_id)
+        return CRUD.update(DBModels.Card, operations, **item.dict())
 
     @classmethod
     def delete(self, id: int) -> str:
@@ -115,6 +115,10 @@ class Card:
     @classmethod
     def delete_table(self) -> str:
         return CRUD.delete_table(DBModels.Card)
+
+    @classmethod
+    def import_table(self, table: List[Dict]) -> str:
+        return CRUD.import_table(DBModels.Card, table)
 
 
 @strawberry.type
@@ -149,13 +153,13 @@ class GroupSKU:
         return CRUD.one(DBModels.GroupSKU, f)
 
     @classmethod
-    def create(self, name: str) -> "GroupSKU":
-        return CRUD.create(DBModels.GroupSKU, name=name)
+    def create(self, item: Input) -> "GroupSKU":
+        return CRUD.create(DBModels.GroupSKU, **item.dict())
 
     @classmethod
-    def update(self, id: int, name: str) -> "GroupSKU":
+    def update(self, id: int, item: Input) -> "GroupSKU":
         operations = CRUD.Operations(filters=[DBModels.GroupSKU.id == id])
-        return CRUD.update(DBModels.GroupSKU, operations, name=name)
+        return CRUD.update(DBModels.GroupSKU, operations, **item.dict())
 
     @classmethod
     def delete(self, id: int) -> str:
@@ -210,13 +214,13 @@ class SKU:
         return CRUD.one(DBModels.SKU, operations)
 
     @classmethod
-    def create(self, name: str, group_id: int) -> "SKU":
-        return CRUD.create(DBModels.SKU, name=name, group_id=group_id)
+    def create(self, item: Input) -> "SKU":
+        return CRUD.create(DBModels.SKU, **item.dict())
 
     @classmethod
-    def update(self, id: int, name: str, group_id: int) -> "SKU":
+    def update(self, id: int, item: Input) -> "SKU":
         operations = CRUD.Operations(filters=[DBModels.SKU.id == id])
-        return CRUD.update(DBModels.SKU, operations, name=name, group_id=group_id)
+        return CRUD.update(DBModels.SKU, operations, **item.dict())
 
     @classmethod
     def delete(self, id: int) -> str:
@@ -267,28 +271,13 @@ class Store:
         return CRUD.one(DBModels.Store, operations)
 
     @classmethod
-    def create(
-        self, sku_id: int, purchase_price: float, retail_price: float
-    ) -> "Store":
-        return CRUD.create(
-            DBModels.Store,
-            sku_id=sku_id,
-            purchase_price=purchase_price,
-            retail_price=retail_price,
-        )
+    def create(self, item: Input) -> "Store":
+        return CRUD.create(DBModels.Store, **item.dict())
 
     @classmethod
-    def update(
-        self, id: int, sku_id: int, purchase_price: float, retail_price: float
-    ) -> "Store":
+    def update(self, id: int, item: Input) -> "Store":
         operations = CRUD.Operations(filters=[DBModels.Store.id == id])
-        return CRUD.update(
-            DBModels.Store,
-            operations,
-            sku_id=sku_id,
-            purchase_price=purchase_price,
-            retail_price=retail_price,
-        )
+        return CRUD.update(DBModels.Store, operations, **item.dict())
 
     @classmethod
     def delete(self, id: int) -> str:
@@ -342,30 +331,13 @@ class Transaction:
         return CRUD.one(DBModels.Transaction, operations)
 
     @classmethod
-    def create(
-        self, card_id: int, sum: float, datetime: str, store_id: int
-    ) -> "Transaction":
-        return CRUD.create(
-            DBModels.Transaction,
-            card_id=card_id,
-            sum=sum,
-            datetime=datetime,
-            store_id=store_id,
-        )
+    def create(self, item: Input) -> "Transaction":
+        return CRUD.create(DBModels.Transaction, **item.dict())
 
     @classmethod
-    def update(
-        self, id: int, card_id: int, sum: float, datetime: str, store_id: int
-    ) -> "Transaction":
+    def update(self, id: int, item: Input) -> "Transaction":
         operations = CRUD.Operations(filters=[DBModels.Transaction.id == id])
-        return CRUD.update(
-            DBModels.Transaction,
-            operations,
-            card_id=card_id,
-            sum=sum,
-            datetime=datetime,
-            store_id=store_id,
-        )
+        return CRUD.update(DBModels.Transaction, operations, **item.dict())
 
     @classmethod
     def delete(self, id: int) -> str:
@@ -426,24 +398,15 @@ class Check:
         return CRUD.one(DBModels.Check, operations)
 
     @classmethod
-    def create(
-        self,
-        transaction_id: int,
-        sku_id: int,
-        sku_amount: float,
-        sku_summ: float,
-        sku_summ_paid: float,
-        sku_discount: float,
-    ) -> "Check":
-        return CRUD.create(
-            DBModels.Check,
-            transaction_id=transaction_id,
-            sku_id=sku_id,
-            sku_amount=sku_amount,
-            sku_summ=sku_summ,
-            sku_summ_paid=sku_summ_paid,
-            sku_discount=sku_discount,
+    def create(self, item: Input) -> "Check":
+        return CRUD.create(DBModels.Check, **item.dict())
+
+    @classmethod
+    def update(self, transaction_id: int, item: Input) -> "Check":
+        operations = CRUD.Operations(
+            filters=[DBModels.Check.transaction_id == transaction_id]
         )
+        return CRUD.update(DBModels.Check, operations, **item.dict())
 
     @classmethod
     def delete(self, transaction_id: int) -> str:
@@ -486,7 +449,6 @@ class Segment:
     churn_probability: str
 
     class Input(BaseModel):
-        segment: int
         average_check: str
         purchase_frequency: str
         churn_probability: str
@@ -506,35 +468,13 @@ class Segment:
         return CRUD.one(DBModels.Segment, operations)
 
     @classmethod
-    def create(
-        self,
-        average_check: str,
-        purchase_frequency: str,
-        churn_probability: str,
-    ) -> "Segment":
-        return CRUD.create(
-            DBModels.Segment,
-            average_check=average_check,
-            purchase_frequency=purchase_frequency,
-            churn_probability=churn_probability,
-        )
+    def create(self, item: Input) -> "Segment":
+        return CRUD.create(DBModels.Segment, **item.dict())
 
     @classmethod
-    def update(
-        self,
-        segment: int,
-        average_check: str,
-        purchase_frequency: str,
-        churn_probability: str,
-    ) -> "Segment":
+    def update(self, segment: int, item: Input) -> "Segment":
         operations = CRUD.Operations(filters=[DBModels.Segment.segment == segment])
-        return CRUD.update(
-            DBModels.Segment,
-            operations,
-            average_check=average_check,
-            purchase_frequency=purchase_frequency,
-            churn_probability=churn_probability,
-        )
+        return CRUD.update(DBModels.Segment, operations, **item.dict())
 
     @classmethod
     def delete(self, segment: int) -> str:

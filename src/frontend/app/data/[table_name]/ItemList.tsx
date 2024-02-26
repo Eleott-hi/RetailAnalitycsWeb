@@ -4,8 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import EditableTable from '@/components/EditableTable';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import TableItemHandler from '@/components/TableItemHandler';
-import { apiImportTable } from '@/components/ApiHandler';
-import { apiGetTableAsync, apiDeleteTableAsync, apiCreateItemAsync, apiUpdateItemAsync, apiDeleteItemAsync } from '@/components/api/TableApiHandler';
+import { apiGetTableAsync, apiDeleteTableAsync, apiCreateItemAsync, apiUpdateItemAsync, apiDeleteItemAsync, apiImportTableAsync } from '@/components/api/TableApiHandler';
 import { ExportCSV, ImportCSV } from '@/components/ImportExport';
 import ErrorDialog from '@/components/ErrorDialog';
 
@@ -24,7 +23,7 @@ export default function ItemList({ t_name, columns, items }: { t_name: string, c
         handleClose: (is_confirmed: boolean) => { },
     });
     const [isErrorDialog, setIsErrorDialog] = useState(false);
-    const [errorProps, setErrorProps] = useState({
+    const [errorProps, _] = useState({
         header: "Invalid item parameters",
         content: "Please check your input and try again",
         handleClose: () => { setIsErrorDialog(false) }
@@ -38,7 +37,7 @@ export default function ItemList({ t_name, columns, items }: { t_name: string, c
     const editItem = (id: string, item: any) => apiUpdateItemAsync(t_name, id, item).then(updateTable).catch((_) => setIsErrorDialog(true));
     const createItem = (item: any) => apiCreateItemAsync(t_name, item).then(updateTable).catch((_) => setIsErrorDialog(true));
     const deleteItem = (id: string) => apiDeleteItemAsync(t_name, id).then(updateTable).catch(error => console.error(error));
-    const uploadTable = (data: any[]) => apiImportTable(t_name, data, updateTable);
+    const uploadTable = (data: any[]) => apiImportTableAsync(t_name, data).then(updateTable).catch(error => console.error(error));
 
     const openDeleteItemConfirmDialog = (id: string) => {
         setConfirmDialog({

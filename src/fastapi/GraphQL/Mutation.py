@@ -72,7 +72,8 @@ class Mutation:
     @strawberry.mutation
     def delete_table_item(self, t_name: str, id: int) -> str:
         try:
-            res = GQLModels.tables[t_name].delete(id)
+            cls = GQLModels.tables[t_name]
+            res = cls.delete(id)
             return res
 
         except Exception as e:
@@ -81,10 +82,21 @@ class Mutation:
     @strawberry.mutation
     def delete_table(self, t_name: str) -> str:
         try:
-            res = GQLModels.tables[t_name].delete_table()
+            cls = GQLModels.tables[t_name]
+            res = cls.delete_table()
             return res
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise e
 
-    
+    @strawberry.mutation
+    def import_table(self, t_name: str, table: str) -> str:
+        try:
+            cls = GQLModels.tables[t_name]
+            table = json.loads(table)
+            table = [cls.Input.parse_obj(item) for item in table]
+            res = cls.import_table(table)
+            return res
+
+        except Exception as e:
+            raise e

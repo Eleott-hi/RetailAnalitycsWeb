@@ -10,19 +10,6 @@ INSERT INTO Users (username, password, Role_ID, email) VALUES
 ('admin', '$2b$12$8/ut7olCV9P0ypwfNc8LpeLbPe3E9DaXayfnb4D5sXVnPhFUrLAEW', 1, 'admin@example.com'),
 ('user', '$2b$12$./Kyn1h7HaFP3dlBEgQ6M.VMrkLHfZ23T4bwFzbPZ5fbVscrdQXtm', 2, 'user@example.com');
 
-CREATE OR REPLACE PROCEDURE prc_import_table(dir VARCHAR, table_name VARCHAR, del CHAR, mini BOOLEAN) AS
-$$
-DECLARE
-    mini_suffix VARCHAR := (SELECT CASE WHEN mini THEN '_Mini' ELSE '' END);
-    extansion   VARCHAR := (SELECT CASE WHEN del = ',' THEN '.csv' WHEN del = E'\t' THEN '.tsv' ELSE '' END);
-    str_quary   VARCHAR := 'COPY ' || table_name || ' FROM ''' || dir || '/' || table_name || mini_suffix ||
-                           extansion || ''' DELIMITER ''' || del || '''';
-BEGIN
-    RAISE NOTICE '%', str_quary;
-    EXECUTE (str_quary);
-END;
-$$ LANGUAGE plpgsql;
-
 CREATE OR REPLACE PROCEDURE prc_export_table(dir VARCHAR, table_name VARCHAR, del CHAR) AS
 $$
 DECLARE
@@ -51,6 +38,18 @@ BEGIN
 END ;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE PROCEDURE prc_import_table(dir VARCHAR, table_name VARCHAR, del CHAR, mini BOOLEAN) AS
+$$
+DECLARE
+    mini_suffix VARCHAR := (SELECT CASE WHEN mini THEN '_Mini' ELSE '' END);
+    extansion   VARCHAR := (SELECT CASE WHEN del = ',' THEN '.csv' WHEN del = E'\t' THEN '.tsv' ELSE '' END);
+    str_quary   VARCHAR := 'COPY ' || table_name || ' FROM ''' || dir || '/' || table_name || mini_suffix ||
+                           extansion || ''' DELIMITER ''' || del || '''';
+BEGIN
+    RAISE NOTICE '%', str_quary;
+    EXECUTE (str_quary);
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE prc_import(dir VARCHAR, del CHAR, mini BOOLEAN) AS
 $$

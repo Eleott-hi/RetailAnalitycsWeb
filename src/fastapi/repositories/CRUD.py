@@ -96,3 +96,12 @@ def delete_table(cls: type) -> str:
         session.commit()
 
         return "Table deleted !"
+
+
+def import_table(cls: type, table: list) -> str:
+    with get_db() as session:
+        delete_table(cls)
+        session.bulk_insert_mappings(cls, table)
+        session.commit()
+
+        return "Table imported !"

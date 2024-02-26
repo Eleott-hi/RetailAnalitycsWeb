@@ -67,9 +67,6 @@ export function clearBearerToken() {
     localStorage.removeItem('token');
 }
 
-
-
-
 export async function apiGetFunctionsAsync() {
     const response = await fetch(ssr_host + base_functions_api_url,
         {
@@ -88,43 +85,6 @@ export async function apiGetFunctionsAsync() {
     console.log("apiGetFunctionsAsync data:", data);
 
     return data;
-}
-
-
-// export function apiEditItem(t_name: string, id: string, item: any, on_done: (data: any) => void, on_error: (data: any) => void) {
-//     fetch(csr_host + base_table_api_url + '/' + t_name + "/" + id,
-//         {
-//             method: "PUT",
-//             headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
-//             body: JSON.stringify(item)
-//         })
-//         .then(response => { if (response.status !== 200) throw Error("Could not edit item"); return response.json() })
-//         .then(data => { console.log(data); on_done(data); })
-//         .catch(error => { console.error('Error editing item:', error); on_error(error) });
-// }
-
-
-// export function apiCreateItem(t_name: string, item: any, on_done: (data: any) => void, on_error: (data: any) => void) {
-//     console.log("Creating item", item);
-//     fetch(csr_host + base_table_api_url + '/' + t_name,
-//         {
-//             method: "POST",
-//             headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
-//             body: JSON.stringify(item)
-//         })
-//         .then(response => { if (response.status !== 200) throw Error("Could not create item"); return response.json() })
-//         .then(data => { console.log(data); on_done(data) })
-//         .catch(error => { console.error('Error creating item:', error); on_error(error) });
-// }
-
-export function apiDeleteItem(t_name: string, id: string, on_done: (data: any) => void) {
-    fetch(csr_host + base_table_api_url + '/' + t_name + "/" + id,
-        {
-            method: "DELETE",
-            headers: { ...AuthorizationHeader }
-        })
-        .then((data) => { console.log(data); on_done(data) })
-        .catch(error => console.error('Error deleting item:', error));
 }
 
 export function apiImportTable(t_name: string, table: any[], on_done: (data: any) => void) {

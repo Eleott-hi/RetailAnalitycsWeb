@@ -22,6 +22,8 @@ export function ExportCSV(table: any[]) {
 
 
 export function ImportCSV(e: ChangeEvent<HTMLInputElement>, on_done: (data: any) => void) {
+    console.log('Importing CSV');
+
     const file = e?.target?.files ? e?.target?.files[0] : null;
     if (file) {
         Papa.parse(file, {
