@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { apiGetTablesAsync } from "@/components/ApiHandler";
+import { apiGetTablesAsync } from "@/components/api/TableApiHandler";
 
 export default function Data() {
 
@@ -8,7 +8,7 @@ export default function Data() {
 
 
     useEffect(() => {
-        apiGetTablesAsync().then((data) => setTables(data.tables));
+        apiGetTablesAsync().then((data) => setTables(data));
     }, []);
 
 

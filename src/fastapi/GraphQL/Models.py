@@ -1,8 +1,13 @@
 import strawberry
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Any
 import Database.Models as DBModels
 import repositories.CRUD as CRUD
+from pydantic import BaseModel
+
+
+def convert(cls: type, obj: Any):
+    return cls(**{f: getattr(obj, f) for f in cls.fields()})
 
 
 @strawberry.type
@@ -13,8 +18,14 @@ class PersonalData:
     email: str
     phone: str
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        name: str
+        surname: str
+        email: str
+        phone: str
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["id", "name", "surname", "email", "phone"]
 
     @strawberry.field
@@ -35,29 +46,22 @@ class PersonalData:
         return CRUD.one(DBModels.PersonalData, operations)
 
     @classmethod
-    def create(self, name: str, surname: str, email: str, phone: str) -> "PersonalData":
-        return CRUD.create(
-            DBModels.PersonalData, name=name, surname=surname, email=email, phone=phone
-        )
+    def update(self, id: int, item: Input) -> "PersonalData":
+        operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
+        return CRUD.update(DBModels.PersonalData, operations, **item.dict())
 
     @classmethod
-    def update(
-        self, id: int, name: str, surname: str, email: str, phone: str
-    ) -> "PersonalData":
-        operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
-        return CRUD.update(
-            DBModels.PersonalData,
-            operations,
-            name=name,
-            surname=surname,
-            email=email,
-            phone=phone,
-        )
+    def create(self, item: Input) -> "PersonalData":
+        return CRUD.create(DBModels.PersonalData, **item.dict())
 
     @classmethod
     def delete(self, id: int) -> str:
         operations = CRUD.Operations(filters=[DBModels.PersonalData.id == id])
         return CRUD.delete(DBModels.PersonalData, operations)
+
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.PersonalData)
 
 
 @strawberry.type
@@ -65,8 +69,11 @@ class Card:
     id: int
     customer_id: int
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        customer_id: int
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["id", "customer_id"]
 
     @strawberry.field
@@ -105,14 +112,21 @@ class Card:
         operations = CRUD.Operations(filters=[DBModels.Card.id == id])
         return CRUD.delete(DBModels.Card, operations)
 
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.Card)
+
 
 @strawberry.type
 class GroupSKU:
     id: int
     name: str
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        name: str
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["id", "name"]
 
     @strawberry.field
@@ -148,6 +162,10 @@ class GroupSKU:
         operations = CRUD.Operations(filters=[DBModels.GroupSKU.id == id])
         return CRUD.delete(DBModels.GroupSKU, operations)
 
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.GroupSKU)
+
 
 @strawberry.type
 class SKU:
@@ -155,8 +173,12 @@ class SKU:
     name: str
     group_id: int
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        name: str
+        group_id: int
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["id", "name", "group_id"]
 
     @strawberry.field
@@ -201,6 +223,10 @@ class SKU:
         operations = CRUD.Operations(filters=[DBModels.SKU.id == id])
         return CRUD.delete(DBModels.SKU, operations)
 
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.SKU)
+
 
 @strawberry.type
 class Store:
@@ -209,8 +235,13 @@ class Store:
     purchase_price: float
     retail_price: float
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        sku_id: int
+        purchase_price: float
+        retail_price: float
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["id", "sku_id", "purchase_price", "retail_price"]
 
     @strawberry.field
@@ -264,6 +295,10 @@ class Store:
         operations = CRUD.Operations(filters=[DBModels.Store.id == id])
         return CRUD.delete(DBModels.Store, operations)
 
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.Store)
+
 
 @strawberry.type
 class Transaction:
@@ -273,8 +308,14 @@ class Transaction:
     datetime: str
     store_id: int
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        card_id: int
+        sum: float
+        datetime: str
+        store_id: int
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["id", "card_id", "sum", "datetime", "store_id"]
 
     @strawberry.field
@@ -326,6 +367,15 @@ class Transaction:
             store_id=store_id,
         )
 
+    @classmethod
+    def delete(self, id: int) -> str:
+        operations = CRUD.Operations(filters=[DBModels.Transaction.id == id])
+        return CRUD.delete(DBModels.Transaction, operations)
+
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.Transaction)
+
 
 @strawberry.type
 class Check:
@@ -336,8 +386,16 @@ class Check:
     sku_summ_paid: float
     sku_discount: float
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        transaction_id: int
+        sku_id: int
+        sku_amount: float
+        sku_summ: float
+        sku_summ_paid: float
+        sku_discount: float
+
+    @classmethod
+    def fields(self) -> List[str]:
         return [
             "transaction_id",
             "sku_id",
@@ -367,19 +425,57 @@ class Check:
         )
         return CRUD.one(DBModels.Check, operations)
 
+    @classmethod
+    def create(
+        self,
+        transaction_id: int,
+        sku_id: int,
+        sku_amount: float,
+        sku_summ: float,
+        sku_summ_paid: float,
+        sku_discount: float,
+    ) -> "Check":
+        return CRUD.create(
+            DBModels.Check,
+            transaction_id=transaction_id,
+            sku_id=sku_id,
+            sku_amount=sku_amount,
+            sku_summ=sku_summ,
+            sku_summ_paid=sku_summ_paid,
+            sku_discount=sku_discount,
+        )
+
+    @classmethod
+    def delete(self, transaction_id: int) -> str:
+        operations = CRUD.Operations(
+            filters=[DBModels.Check.transaction_id == transaction_id]
+        )
+        return CRUD.delete(DBModels.Check, operations)
+
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.Check)
+
 
 @strawberry.type
 class DateOfAnalysisFormation:
     date: datetime
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        date: datetime
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["date"]
 
     @classmethod
     def all(self) -> List["DateOfAnalysisFormation"]:
         operations = CRUD.Operations(orders_by=[DBModels.DateOfAnalysisFormation.date])
         return CRUD.all(DBModels.DateOfAnalysisFormation, operations)
+
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.DateOfAnalysisFormation)
 
 
 @strawberry.type
@@ -389,14 +485,65 @@ class Segment:
     purchase_frequency: str
     churn_probability: str
 
-    @staticmethod
-    def fields() -> List[str]:
+    class Input(BaseModel):
+        segment: int
+        average_check: str
+        purchase_frequency: str
+        churn_probability: str
+
+    @classmethod
+    def fields(self) -> List[str]:
         return ["segment", "average_check", "purchase_frequency", "churn_probability"]
 
     @classmethod
     def all(self) -> List["Segment"]:
         operations = CRUD.Operations(orders_by=[DBModels.Segment.segment])
         return CRUD.all(DBModels.Segment, operations)
+
+    @classmethod
+    def get(self, segment: int) -> "Segment":
+        operations = CRUD.Operations(filters=[DBModels.Segment.segment == segment])
+        return CRUD.one(DBModels.Segment, operations)
+
+    @classmethod
+    def create(
+        self,
+        average_check: str,
+        purchase_frequency: str,
+        churn_probability: str,
+    ) -> "Segment":
+        return CRUD.create(
+            DBModels.Segment,
+            average_check=average_check,
+            purchase_frequency=purchase_frequency,
+            churn_probability=churn_probability,
+        )
+
+    @classmethod
+    def update(
+        self,
+        segment: int,
+        average_check: str,
+        purchase_frequency: str,
+        churn_probability: str,
+    ) -> "Segment":
+        operations = CRUD.Operations(filters=[DBModels.Segment.segment == segment])
+        return CRUD.update(
+            DBModels.Segment,
+            operations,
+            average_check=average_check,
+            purchase_frequency=purchase_frequency,
+            churn_probability=churn_probability,
+        )
+
+    @classmethod
+    def delete(self, segment: int) -> str:
+        operations = CRUD.Operations(filters=[DBModels.Segment.segment == segment])
+        return CRUD.delete(DBModels.Segment, operations)
+
+    @classmethod
+    def delete_table(self) -> str:
+        return CRUD.delete_table(DBModels.Segment)
 
 
 tables = {
@@ -410,3 +557,15 @@ tables = {
     "DateOfAnalysisFormation": DateOfAnalysisFormation,
     "Segment": Segment,
 }
+
+ModelsUnion = (
+    PersonalData
+    | Card
+    | GroupSKU
+    | SKU
+    | Check
+    | Store
+    | Transaction
+    | DateOfAnalysisFormation
+    | Segment
+)

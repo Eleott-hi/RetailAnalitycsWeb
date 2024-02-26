@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ItemList from "./ItemList"
-import { apiGetTableAsync, apiGetTableFieldsAsync } from "@/components/ApiHandler";
+import { apiGetTableAsync, apiGetTableFieldsAsync } from "@/components/api/TableApiHandler";
 
 export default function TablePage({ params }: { params: { table_name: string } }) {
     const [data, setData] = useState<any>(null);

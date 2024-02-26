@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { proceedRegistration } from "@/components/ApiHandler";
+import { proceedRegistrationAsync } from "@/components/ApiHandler";
 import { UseAppContext } from '@/context';
 
 export default function Registration() {

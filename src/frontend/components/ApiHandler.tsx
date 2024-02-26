@@ -14,7 +14,7 @@ const base_sql_request_api_url = "/sql-request"
 const base_functions_api_url = "/functions";
 
 
-export async function proceedRegistration(formData: Object, on_done: (data: any) => void = () => { }, on_error: (data: any) => void = () => { }) {
+export async function proceedRegistrationAsync(formData: Object, on_done: (data: any) => void = () => { }, on_error: (data: any) => void = () => { }) {
     let is_ok = true;
     const response = await fetch(csr_host + base_auth_api_url + "/register",
         {
@@ -31,7 +31,7 @@ export async function proceedRegistration(formData: Object, on_done: (data: any)
 }
 
 
-export async function proceedLogin(formData: Object) {
+export async function proceedLoginAsync(formData: Object) {
     console.log(formData);
     const response = await fetch(csr_host + base_auth_api_url + "/login",
         {
@@ -67,83 +67,6 @@ export function clearBearerToken() {
     localStorage.removeItem('token');
 }
 
-export async function apiGetTablesAsync() {
-    const response = await fetch(ssr_host + graphql_api_url,
-        {
-            method: "POST",
-            cache: "no-cache",
-            headers: { "Content-Type": "application/json", ...getAuthorizationHeader() },
-            body: JSON.stringify({ query: "{ tables }" })
-        }
-    )
-
-    if (!response.ok) {
-        throw "Tables not found";
-    }
-
-    const data = await response.json();
-
-    console.log(data);
-
-    return data.data;
-}
-
-export async function apiGetTableFieldsAsync(t_name: string) {
-    const response = await fetch(ssr_host + graphql_api_url,
-        {
-            method: "POST",
-            cache: "no-cache",
-            headers: { "Content-Type": "application/json", ...getAuthorizationHeader() },
-            body: JSON.stringify({ query: `{ table_fields(t_name: "${t_name}") }` })
-        }
-    )
-
-    if (!response.ok) {
-        throw "Error fetching table's fields";
-    }
-
-    const data = await response.json();
-
-    console.log(data);
-
-    return data.data;
-}
-
-
-export async function apiGetTableAsync(t_name: string) {
-    const t_fields = (await apiGetTableFieldsAsync(t_name)).table_fields;
-
-    const response = await fetch(ssr_host + graphql_api_url,
-        {
-            method: "POST",
-            cache: "no-cache",
-            headers: { "Content-Type": "application/json", ...getAuthorizationHeader() },
-            body: JSON.stringify({
-                query: `
-            {
-                table_all(t_name: "${t_name}") {
-                  ... on ${t_name} {
-                    ${t_fields}
-                  }
-                }
-              }
-            ` })
-        }
-    )
-
-    console.log(response);
-
-
-    if (!response.ok) {
-        throw "Table not found";
-    }
-
-    const data = await response.json();
-
-    console.log("Data:", data.data.table_all);
-
-    return [data.data.table_all, t_fields];
-}
 
 
 
@@ -155,60 +78,44 @@ export async function apiGetFunctionsAsync() {
             headers: { ...AuthorizationHeader }
         }
     )
-    return response.json();
+
+    console.log("apiGetFunctionsAsync response:", response);
+    if (!response.ok) {
+        throw "Functions not found";
+    }
+
+    const data = await response.json();
+    console.log("apiGetFunctionsAsync data:", data);
+
+    return data;
 }
 
 
-
-export function apiGetTable(t_name: string, on_done: (data: any) => void) {
-    fetch(csr_host + base_table_api_url + '/' + t_name,
-        {
-            method: "GET",
-            headers: { ...AuthorizationHeader }
-        })
-        .then(response => response.json())
-        .then(data => { console.log(data); on_done(data) })
-        .catch(error => console.error('Error fetching tables:', error));
-}
-
-
-export function apiDeleteTable(t_name: string, on_done: CallableFunction) {
-    fetch(csr_host + base_table_api_url + '/' + t_name,
-        {
-            method: "DELETE",
-            headers: { ...AuthorizationHeader }
-        })
-        .then((data) => { console.log(data); return data })
-        .then((data) => { console.log(data); on_done(data) })
-        .catch(error => console.error('Error deleting tables:', error));
-}
+// export function apiEditItem(t_name: string, id: string, item: any, on_done: (data: any) => void, on_error: (data: any) => void) {
+//     fetch(csr_host + base_table_api_url + '/' + t_name + "/" + id,
+//         {
+//             method: "PUT",
+//             headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
+//             body: JSON.stringify(item)
+//         })
+//         .then(response => { if (response.status !== 200) throw Error("Could not edit item"); return response.json() })
+//         .then(data => { console.log(data); on_done(data); })
+//         .catch(error => { console.error('Error editing item:', error); on_error(error) });
+// }
 
 
-export function apiEditItem(t_name: string, id: string, item: any, on_done: (data: any) => void, on_error: (data: any) => void) {
-    fetch(csr_host + base_table_api_url + '/' + t_name + "/" + id,
-        {
-            method: "PUT",
-            headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
-            body: JSON.stringify(item)
-        })
-        .then(response => { if (response.status !== 200) throw Error("Could not edit item"); return response.json() })
-        .then(data => { console.log(data); on_done(data); })
-        .catch(error => { console.error('Error editing item:', error); on_error(error) });
-}
-
-
-export function apiCreateItem(t_name: string, item: any, on_done: (data: any) => void, on_error: (data: any) => void) {
-    console.log("Creating item", item);
-    fetch(csr_host + base_table_api_url + '/' + t_name,
-        {
-            method: "POST",
-            headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
-            body: JSON.stringify(item)
-        })
-        .then(response => { if (response.status !== 200) throw Error("Could not create item"); return response.json() })
-        .then(data => { console.log(data); on_done(data) })
-        .catch(error => { console.error('Error creating item:', error); on_error(error) });
-}
+// export function apiCreateItem(t_name: string, item: any, on_done: (data: any) => void, on_error: (data: any) => void) {
+//     console.log("Creating item", item);
+//     fetch(csr_host + base_table_api_url + '/' + t_name,
+//         {
+//             method: "POST",
+//             headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
+//             body: JSON.stringify(item)
+//         })
+//         .then(response => { if (response.status !== 200) throw Error("Could not create item"); return response.json() })
+//         .then(data => { console.log(data); on_done(data) })
+//         .catch(error => { console.error('Error creating item:', error); on_error(error) });
+// }
 
 export function apiDeleteItem(t_name: string, id: string, on_done: (data: any) => void) {
     fetch(csr_host + base_table_api_url + '/' + t_name + "/" + id,

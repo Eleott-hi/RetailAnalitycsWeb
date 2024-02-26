@@ -1,6 +1,6 @@
 from Database.Database import get_db
 from dataclasses import dataclass, field
-from sqlalchemy import  func
+from sqlalchemy import func
 
 
 @dataclass
@@ -81,6 +81,18 @@ def update(cls: type, operations: Operations = Operations(), **kwargs) -> any:
 def delete(cls: type, operations: Operations = Operations()) -> str:
     with get_db() as session:
         item = operations.perform(session.query(cls)).first()
-        item.delete()
+        if item is None:
+            return "Item not found !"
+
+        session.delete(item)
         session.commit()
-        return "Deleted !"
+
+        return "Item deleted !"
+
+
+def delete_table(cls: type) -> str:
+    with get_db() as session:
+        session.query(cls).delete()
+        session.commit()
+
+        return "Table deleted !"
