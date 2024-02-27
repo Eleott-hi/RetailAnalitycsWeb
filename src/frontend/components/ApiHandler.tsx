@@ -67,25 +67,25 @@ export function clearBearerToken() {
     localStorage.removeItem('token');
 }
 
-export async function apiGetFunctionsAsync() {
-    const response = await fetch(ssr_host + base_functions_api_url,
-        {
-            method: "GET",
-            cache: "no-cache",
-            headers: { ...AuthorizationHeader }
-        }
-    )
+// export async function apiGetFunctionsAsync() {
+//     const response = await fetch(ssr_host + base_functions_api_url,
+//         {
+//             method: "GET",
+//             cache: "no-cache",
+//             headers: { ...AuthorizationHeader }
+//         }
+//     )
 
-    console.log("apiGetFunctionsAsync response:", response);
-    if (!response.ok) {
-        throw "Functions not found";
-    }
+//     console.log("apiGetFunctionsAsync response:", response);
+//     if (!response.ok) {
+//         throw "Functions not found";
+//     }
 
-    const data = await response.json();
-    console.log("apiGetFunctionsAsync data:", data);
+//     const data = await response.json();
+//     console.log("apiGetFunctionsAsync data:", data);
 
-    return data;
-}
+//     return data;
+// }
 
 export function apiImportTable(t_name: string, table: any[], on_done: (data: any) => void) {
     fetch(csr_host + base_table_api_url + '/' + t_name + "/import",
@@ -99,37 +99,37 @@ export function apiImportTable(t_name: string, table: any[], on_done: (data: any
 }
 
 
-export function apiGetFunctionInfo(f_name: string, on_done: (data: any) => void) {
-    fetch(csr_host + base_functions_api_url + "/" + f_name,
-        {
-            method: "GET",
-            headers: { ...AuthorizationHeader }
-        })
-        .then(response => response.json())
-        .then(data => { console.log(data); on_done(data); })
-        .catch(error => console.error('Error fetching function info:', error));
-}
+// export function apiGetFunctionInfo(f_name: string, on_done: (data: any) => void) {
+//     fetch(csr_host + base_functions_api_url + "/" + f_name,
+//         {
+//             method: "GET",
+//             headers: { ...AuthorizationHeader }
+//         })
+//         .then(response => response.json())
+//         .then(data => { console.log(data); on_done(data); })
+//         .catch(error => console.error('Error fetching function info:', error));
+// }
 
-export function apiExecuteFunction(f_name: string, params: any, on_done: (data: any) => void, on_error: (data: any) => void) {
-    fetch(csr_host + base_functions_api_url + "/" + f_name + "/execute",
-        {
-            method: "POST",
-            headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
-            body: JSON.stringify(params),
-        })
-        .then(response => { if (response.status !== 200) throw Error("Could not execute function"); return response.json() })
-        .then(data => { console.log(data); on_done(data); })
-        .catch(error => { console.error('Error fetching tables:', error); on_error(error) });
-}
+// export function apiExecuteFunction(f_name: string, params: any, on_done: (data: any) => void, on_error: (data: any) => void) {
+//     fetch(csr_host + base_functions_api_url + "/" + f_name + "/execute",
+//         {
+//             method: "POST",
+//             headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
+//             body: JSON.stringify(params),
+//         })
+//         .then(response => { if (response.status !== 200) throw Error("Could not execute function"); return response.json() })
+//         .then(data => { console.log(data); on_done(data); })
+//         .catch(error => { console.error('Error fetching tables:', error); on_error(error) });
+// }
 
-export function apiSendSqlRequest(sqlRequest: string, on_done: (data: any) => void, on_error: (data: any) => void) {
-    fetch(csr_host + base_sql_request_api_url + `?request=${sqlRequest}`,
-        {
-            method: "GET",
-            headers: { ...AuthorizationHeader }
-        })
-        .then(response => { console.log(response); return response })
-        .then(response => { if (response.status !== 200) throw Error("Could not execute function"); return response.json() })
-        .then(on_done)
-        .catch(error => { console.error('Error fetching sql request:', error); on_error(error) });
-}
+// export function apiSendSqlRequest(sqlRequest: string, on_done: (data: any) => void, on_error: (data: any) => void) {
+//     fetch(csr_host + base_sql_request_api_url + `?request=${sqlRequest}`,
+//         {
+//             method: "GET",
+//             headers: { ...AuthorizationHeader }
+//         })
+//         .then(response => { console.log(response); return response })
+//         .then(response => { if (response.status !== 200) throw Error("Could not execute function"); return response.json() })
+//         .then(on_done)
+//         .catch(error => { console.error('Error fetching sql request:', error); on_error(error) });
+// }

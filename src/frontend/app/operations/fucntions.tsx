@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import Table from "@/components/Table";
 import TableItemHandler from "@/components/TableItemHandler"
 import { ExportCSV } from '@/components/ImportExport';
-import { apiGetFunctionInfo, apiExecuteFunction } from '@/components/ApiHandler';
+import { apiGetFunctionInfoAsync, apiExecuteFunctionAsync } from '@/components/api/FunctionApiHandler';
+
 import ErrorDialog from '@/components/ErrorDialog';
 
 export default function FunctionList({ functions, readable }: { functions: string[], readable: string[] }) {
@@ -21,7 +22,7 @@ export default function FunctionList({ functions, readable }: { functions: strin
         handleClose: () => { setIsErrorDialog(false) }
     });
 
-    const ExecuteFunction = (f_name: string, params: any, on_done: (data: any[]) => void) => { setTable([]); apiExecuteFunction(f_name, params, on_done, () => { setTable(null); setIsErrorDialog(true); }); }
+    const ExecuteFunction = (f_name: string, params: any, on_done: (data: any[]) => void) => { setTable([]); apiExecuteFunctionAsync(f_name, params).then(on_done).catch(error => { console.error(error); setTable(null); setIsErrorDialog(true); }); }
 
     const OpenParametersDialog = (f_name: string, data: any) => {
         setItemDialog({
@@ -48,7 +49,7 @@ export default function FunctionList({ functions, readable }: { functions: strin
         }
     }
 
-    const FunctionHandler = (f_name: string) => { apiGetFunctionInfo(f_name, (data) => ParametersDialogLogic(f_name, data.input)); }
+    const FunctionHandler = (f_name: string) => apiGetFunctionInfoAsync(f_name).then((data) => ParametersDialogLogic(f_name, data)).catch(error => console.error(error));
 
     return (
         <div className="p-4 row">
