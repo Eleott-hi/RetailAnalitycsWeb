@@ -29,3 +29,8 @@ async def login(requset_body: LoginSchema):
 async def forgot_password(request_body: ForgotPasswordSchema):
     await AuthService.forgot_password(request_body)
     return "Password successfully updated!"
+
+@router.get("/islogged")
+async def is_logged_in():
+    return True
+

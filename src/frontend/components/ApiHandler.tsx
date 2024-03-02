@@ -14,40 +14,6 @@ const base_sql_request_api_url = "/sql-request"
 const base_functions_api_url = "/functions";
 
 
-export async function proceedRegistrationAsync(formData: Object, on_done: (data: any) => void = () => { }, on_error: (data: any) => void = () => { }) {
-    let is_ok = true;
-    const response = await fetch(csr_host + base_auth_api_url + "/register",
-        {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-
-    const data = await response.json();
-
-    if (!response.ok) throw data.detail;
-
-    return data;
-}
-
-
-export async function proceedLoginAsync(formData: Object) {
-    console.log(formData);
-    const response = await fetch(csr_host + base_auth_api_url + "/login",
-        {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-
-    const data = await response.json();
-
-
-    if (!response.ok) throw data.detail;
-
-    return data
-}
-
 function getBearerToken() {
     if (typeof window === 'undefined') return "";
     return localStorage.getItem('token') || "";
@@ -67,26 +33,6 @@ export function clearBearerToken() {
     localStorage.removeItem('token');
 }
 
-// export async function apiGetFunctionsAsync() {
-//     const response = await fetch(ssr_host + base_functions_api_url,
-//         {
-//             method: "GET",
-//             cache: "no-cache",
-//             headers: { ...AuthorizationHeader }
-//         }
-//     )
-
-//     console.log("apiGetFunctionsAsync response:", response);
-//     if (!response.ok) {
-//         throw "Functions not found";
-//     }
-
-//     const data = await response.json();
-//     console.log("apiGetFunctionsAsync data:", data);
-
-//     return data;
-// }
-
 export function apiImportTable(t_name: string, table: any[], on_done: (data: any) => void) {
     fetch(csr_host + base_table_api_url + '/' + t_name + "/import",
         {
@@ -98,38 +44,3 @@ export function apiImportTable(t_name: string, table: any[], on_done: (data: any
         .catch(error => console.error('Error importing table:', error));
 }
 
-
-// export function apiGetFunctionInfo(f_name: string, on_done: (data: any) => void) {
-//     fetch(csr_host + base_functions_api_url + "/" + f_name,
-//         {
-//             method: "GET",
-//             headers: { ...AuthorizationHeader }
-//         })
-//         .then(response => response.json())
-//         .then(data => { console.log(data); on_done(data); })
-//         .catch(error => console.error('Error fetching function info:', error));
-// }
-
-// export function apiExecuteFunction(f_name: string, params: any, on_done: (data: any) => void, on_error: (data: any) => void) {
-//     fetch(csr_host + base_functions_api_url + "/" + f_name + "/execute",
-//         {
-//             method: "POST",
-//             headers: { ...AuthorizationHeader, 'Content-Type': 'application/json' },
-//             body: JSON.stringify(params),
-//         })
-//         .then(response => { if (response.status !== 200) throw Error("Could not execute function"); return response.json() })
-//         .then(data => { console.log(data); on_done(data); })
-//         .catch(error => { console.error('Error fetching tables:', error); on_error(error) });
-// }
-
-// export function apiSendSqlRequest(sqlRequest: string, on_done: (data: any) => void, on_error: (data: any) => void) {
-//     fetch(csr_host + base_sql_request_api_url + `?request=${sqlRequest}`,
-//         {
-//             method: "GET",
-//             headers: { ...AuthorizationHeader }
-//         })
-//         .then(response => { console.log(response); return response })
-//         .then(response => { if (response.status !== 200) throw Error("Could not execute function"); return response.json() })
-//         .then(on_done)
-//         .catch(error => { console.error('Error fetching sql request:', error); on_error(error) });
-// }

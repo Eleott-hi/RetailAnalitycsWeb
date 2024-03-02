@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useState, useContext } from "react";
-import { proceedLoginAsync, proceedRegistrationAsync } from "@/components/ApiHandler";
+import { apiLoginAsync, apiRegisterAsync, apiIsLoggedIn } from "@/components/api/AuthenticationApiHandler";
+import { getTokenFromLocalStorage, setTokenToLocalStorage, removeTokenFromLocalStorage } from "@/components/api/Common";
 
 const AppContext = createContext<any>(
     {
@@ -14,10 +15,7 @@ const AppContext = createContext<any>(
     }
 );
 
-function getTokenFromLocalStorage() {
-    if (typeof window === 'undefined') return "";
-    return localStorage.getItem('token') || "";
-}
+
 
 export function AppWrapper({ children }: { children: React.ReactNode }) {
     const [store, setStore] = useState({
@@ -26,23 +24,24 @@ export function AppWrapper({ children }: { children: React.ReactNode }) {
 
     const actions = {
         register: async (formData: Object) => {
-            const data = await proceedRegistrationAsync(formData);
+            const data = await apiRegisterAsync(formData);
             return data;
         },
 
         login: async (formData: Object) => {
-            const data = await proceedLoginAsync(formData);
+            const data = await apiLoginAsync(formData);
             const token = data.result.access_token;
-            localStorage.setItem('token', token);
+            setTokenToLocalStorage(token);
             setStore({ ...store, token: token });
         },
 
         isLoggedIn: () => {
-            return store.token.length > 0;
+            const res = getTokenFromLocalStorage();
+            return res && res !== '';
         },
 
         logout: () => {
-            localStorage.removeItem('token');
+            removeTokenFromLocalStorage();
             setStore({
                 ...store,
                 token: ""

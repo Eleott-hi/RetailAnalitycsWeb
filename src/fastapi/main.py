@@ -30,18 +30,19 @@ app.include_router(
 
 app.include_router(
     function_router,
-    #    dependencies=[Depends(JWTBearer())],
+    dependencies=[Depends(JWTBearer())],
 )
 
 app.include_router(
     graphql_router,
     prefix=f"/graphql",
     tags=["GraphQL"],
-    # dependencies=[Depends(JWTBearer())],
+    dependencies=[Depends(JWTBearer())],
 )
 
 origins = [
-    "http://localhost:3000",]
+    "http://localhost:3000",
+]
 
 app.add_middleware(
     CORSMiddleware,
