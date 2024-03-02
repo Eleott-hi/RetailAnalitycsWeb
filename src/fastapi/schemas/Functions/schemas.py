@@ -19,8 +19,6 @@ class fnc_grow_avg_check_output(BaseModel):
     group_name: str
     offer_discount_depth: float
 
-    class Config:
-        from_attributes = True
 
 
 class fnc_personal_offers_aimed_at_increasing_frequency_of_visits_input(BaseModel):
@@ -40,8 +38,6 @@ class fnc_personal_offers_aimed_at_increasing_frequency_of_visits_output(BaseMod
     group_name: str
     offer_discount_depth: float
 
-    class Config:
-        from_attributes = True
 
 
 class fnc_personal_offers_aimed_at_cross_selling_input(BaseModel):
@@ -57,5 +53,3 @@ class fnc_personal_offers_aimed_at_cross_selling_output(BaseModel):
     sku_names: str
     offer_discount_depth: float
 
-    class Config:
-        from_attributes = True

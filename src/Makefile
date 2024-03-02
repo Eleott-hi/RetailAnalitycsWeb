@@ -15,12 +15,15 @@ clean_db:
 	-docker stop $(DB_CONTAINER_NAME)
 	-docker rm $(DB_CONTAINER_NAME)
 
-ui_dev:
+ui_dev: ui_install
 	cd $(UI_DIR); npm run dev
 
-ui_prod:
+ui_prod: ui_install
 	cd $(UI_DIR); npm run build
-	cd $(UI_DIR); npm run start
+	cd $(UI_DIR); npm run start	
+
+ui_install:
+	cd $(UI_DIR); npm install
 
 install: 
 	cd $(UI_DIR); npm install
